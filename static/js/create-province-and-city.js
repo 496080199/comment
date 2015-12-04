@@ -4,13 +4,13 @@ $(document).on("pageinit", function() {
 	var provinces = [];
 	for(var el in provinceAndCityArray) {
 		provinces.push(provinceAndCityArray[el].name);
-		provincesOptionHtml += "<option value=" + el + ">" + provinceAndCityArray[el].name + "</option>";
+		provincesOptionHtml += "<option value=" + provinceAndCityArray[el].name + " id=" + el + ">" + provinceAndCityArray[el].name + "</option>";
 	}
 	$("#selectProvince").append(provincesOptionHtml);
 	
 	// 填充城市下拉列表
 	$("#selectProvince").bind("change", function() {
-		var selectedProvince = $("#selectProvince :selected").val();
+		var selectedProvince = $("#selectProvince :selected").attr("id");
 		if(selectedProvince != -1) {
 			var citiesOptionHtml = "";
 			var cities = [];

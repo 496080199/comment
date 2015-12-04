@@ -1,33 +1,42 @@
 {% extends 'base.html' %}
+{% block head %}
+<script src="{{STATIC_URL}}js/province-and-city-json.js"></script>  
+<script src="{{STATIC_URL}}js/create-province-and-city.js"></script>
+<script src="{{STATIC_URL}}js/code.js"></script>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/code.css"> 
+{% endblock %}
+{% block body %}
+<body onload="createCode();">
+{% endblock %}
 {% block content %}
 <form method="post" data-ajax="false" action="{% url 'register' %}">{% csrf_token %}
-<div align="center"><legend >账号注册</legend></div>
-	<label>账号:</label>{{form.username}}
-	<label>密码:</label>{{form.password}}
-	<label>姓:</label>{{form.last_name}}
-	<label>名:</label>{{form.first_name}}
-	<label>性别:</label>{{form.sex}}
-	<label>生日:</label><input name="birth" type="date" />
-	<label>地址:</label>
+<div style="text-align:center;">账号注册</div>
+	<label>账号:</label>{{form.username}}{{form.username.errors}}
+	<label>请输入密码:</label>{{form.password1}}{{form.password1.errors}}
+	<label>请再次输入密码:</label>{{form.password2}}{{form.password2.errors}}
+	<label>姓:</label>{{form.last_name}}{{form.last_name.errors}}
+	<label>名:</label>{{form.first_name}}{{form.first_name.errors}}
+	<label>性别:</label>{{form.sex}}{{form.sex.errors}}
+	<label>生日:</label><input type="date" name="birth" />{{form.birth.errors}}
+	
 	<label>请选择省份</label>
-	<select id="selectProvince" name="province">  
-                    <option value="-1">请选择省份</option> 
-     </select>
+	<select id="selectProvince" name="province">   
+     </select>{{form.province.errors}}
 	<label>请选择城市</label>
-	<select id="selectCity" name="city">  
-                    <option value="-1">请选择城市</option>  
-            </select>
-             
-  
-        <script src="{{STATIC_URL}}js/province-and-city-json.js"></script>  
-        <script src="{{STATIC_URL}}js/create-province-and-city.js"></script>
-            
-	<label>电子邮箱:</label>{{form.email}}
-	<label>手机:</label>{{form.phone}}
+	<select id="selectCity" name="city">   
+            </select>{{form.city.errors}}
+   
+    <label>详细地址:</label> {{form.address}}{{form.address.errors}}   
+	<label>电子邮箱:</label>{{form.email}}{{form.email.errors}}
+	<label>手机:</label>{{form.phone}}{{form.phone.errors}}
 	<label>注册用户类型:</label>{{form.type}}
+	<label>验证码:</label>     
+	<input type="" id="checkCode" class="code" style="width: 55px" /> <a href="#" onclick="createCode()">看不清楚</a>
+	<input type="text" id="verify" /> 
+	      
 	<br>
 	<br>
-	<button type="submit" data-theme="b">提交</button>
-	<button type="button" data-theme="d">返回</button>
+	<button type="submit" data-theme="b" onclick="return validate();">提交</button>
+	<a href="{% url 'index' %}" data-role="button">返回</a>
 </form>
 {% endblock %}

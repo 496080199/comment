@@ -21,5 +21,8 @@ from django.conf import settings
 urlpatterns = [
     url(r'^$','index.views.index',name='index'),
     url(r'^register$','index.views.register',name='register'),
+    url(r'^user_login$','index.views.user_login',name='user_login'),
+    url(r'^user_logout$','index.views.user_logout',name='user_logout'),
+    url(r'^teacher_center/([0-9]+)$','index.views.teacher_center',name='teacher_center'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 

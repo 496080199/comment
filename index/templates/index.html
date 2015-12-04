@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-    <button>注册</button>
-	<button>登录</button>
+    <a href="{% url 'register' %}" data-role="button">注册</a>
+	<a href="{% url 'user_login' %}" data-role="button">登陆</a>
 {% endblock %}
