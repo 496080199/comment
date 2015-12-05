@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-    <a href="{% url 'register' %}" data-role="button">注册</a>
-	<a href="{% url 'user_login' %}" data-role="button">登陆</a>
+    <h3>问题列表<h3>
+    <ol data-role="listview">
+    {% for work in works %}
+      <li><a href="#">{{work.name}}------发布人：{{work.student.user.last_name}}</a></li>
+     {% endfor %}
 {% endblock %}

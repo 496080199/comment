@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 {% block head %}
-<script src="{{STATIC_URL}}js/province-and-city-json.js"></script>  
-<script src="{{STATIC_URL}}js/create-province-and-city.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/jsAddress.js"></script>
 <script src="{{STATIC_URL}}js/code.js"></script>
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/code.css"> 
 {% endblock %}
 {% block body %}
-<body onload="createCode();">
+<body onload="addressInit('cmbProvince', 'cmbCity', 'cmbArea', '北京', '市辖区', '东城区');createCode();">
 {% endblock %}
 {% block content %}
 <form method="post" data-ajax="false" action="{% url 'register' %}">{% csrf_token %}
@@ -19,12 +18,9 @@
 	<label>性别:</label>{{form.sex}}{{form.sex.errors}}
 	<label>生日:</label><input type="date" name="birth" />{{form.birth.errors}}
 	
-	<label>请选择省份</label>
-	<select id="selectProvince" name="province">   
-     </select>{{form.province.errors}}
-	<label>请选择城市</label>
-	<select id="selectCity" name="city">   
-            </select>{{form.city.errors}}
+	<label>省：</label><select id="cmbProvince" name="province"></select>{{form.province.errors}}
+	<label>市：</label><select id="cmbCity" name="city"></select>{{form.city.errors}}
+	<label>区：</label><select id="cmbArea" name="area"></select>{{form.area.errors}}
    
     <label>详细地址:</label> {{form.address}}{{form.address.errors}}   
 	<label>电子邮箱:</label>{{form.email}}{{form.email.errors}}

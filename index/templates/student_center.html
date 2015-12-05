@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 style="text-align:center;">学生个人中心</h2>
+<hr />
+<div style="text-align:center;"><img src="{{user.student.img}}" alt="头像" height="100" width="100" /></div>
+<div style="text-align:center;">{{user.last_name}}同学，您好！欢迎来到学生个人中心。</div>
+<br>
+<div>
+<ul data-role="listview">
+      <li><a href="{% url 'change_password' %}" data-ajax="false">修改密码</a></li>
+      <li><a href="{% url 'change_info' %}" data-ajax="false">修改个人资料</a></li>
+      <li><a href="#">发布问题</a></li>
+      <li><a href="#">我的问题</a></li>
+      <li><a href="#">我完成的评价</a></li>
+    </ul>
+ </div> 
+ <br>
+ <br>
+ <a href="{% url 'user_logout' %}" data-role="button">退出</a>
+{% endblock %}

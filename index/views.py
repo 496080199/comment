@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render,render_to_response, redirect
+from django.shortcuts import render, redirect
 from index.forms import *
 from django.http.response import HttpResponse
 from django.contrib.auth.models import User
@@ -9,9 +9,20 @@ from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 def index(request):
-    return render_to_response('index.html')
+    works=Work.objects.all()
+    
+    return render(request,'index.html',{'works':works})
 
+def logined(r):
+    if r.user.is_authenticated():
+        if Teacher.objects.filter(user_id=r.user.id):
+            return redirect(reverse('teacher_center'))
+        elif Student.objects.filter(user_id=r.user.id):
+            return redirect(reverse('student_center'))
+    return
 def register(request):
+    if logined(request):
+        return logined(request)
     if request.method=='POST':
         form=UserForm(request.POST)
         if form.is_valid():
@@ -23,19 +34,24 @@ def register(request):
             user.email=form['email'].value()
             user.is_active=1
             user.save()
-            address=form['province'].value()+u'省'+form['city'].value()+u'市'+form['address'].value()
             if form['type'].value()=='teacher':
                 teacher=Teacher(user=user)
                 teacher.sex=form['sex'].value()
                 teacher.birth=form['birth'].value()
-                teacher.address=address
+                teacher.province=form['province'].value()
+                teacher.city=form['city'].value()
+                teacher.area=form['area'].value()
+                teacher.address=form['address'].value()
                 teacher.phone=form['phone'].value()
                 teacher.save()
             else:
                 student=Student(user=user)
                 student.sex=form['sex'].value()
                 student.birth=form['birth'].value()
-                student.address=address
+                student.province=form['province'].value()
+                student.city=form['city'].value()
+                student.area=form['area'].value()
+                student.address=form['address'].value()
                 student.phone=form['phone'].value() 
                 student.save()
             return redirect(reverse('index'))
@@ -44,6 +60,8 @@ def register(request):
         
     return render(request,'register.html',{'form':form,})
 def user_login(request):
+    if logined(request):
+        return logined(request)
     #return HttpResponse(request.META['HTTP_REFERER'])
     error=[]
     if request.method=='POST':
@@ -55,40 +73,45 @@ def user_login(request):
             #user=User.objects.get(username__exact=username,password__exact=password)
             if user:
                 if user.is_active:
-                    login(request, user)
-                    if user.teacher.id:
-                        
-                        return redirect(reverse('/'+request.META['HTTP_REFERER'].split('/')[4]))
-                    elif user.student.id:
-                        return redirect(reverse('student_center'))
+                    login(request, user)    
+                    if Teacher.objects.filter(user_id=user.id):
+                        address=reverse('teacher_center')
+                        if request.META.has_key('HTTP_ORIGIN'):
+                            address=request.META['HTTP_ORIGIN']
+                        return redirect(address)
+
+                    elif Student.objects.filter(user_id=user.id):
+                            address=reverse('student_center')
+                            if request.META.has_key('HTTP_ORIGIN'):
+                                address=request.META['HTTP_ORIGIN']
+                            return redirect(address)
             else:
                 error.append('请输入正确的用户名和密码')
     else:
         form=UserLoginForm()
+        
     
-    return render(request,'userlogin.html',{'form':form,'error':error})
+    return render(request,'userlogin.html',{'form':form,'error':error,})
 def user_logout(request):
     logout(request)
     return redirect(reverse('user_login'))
-def teacher_center(request,id):
+def teacher_center(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    teacher=User.objects.get(id=id)
-    img=teacher.teacher.img
     
-    return render(request,'teacher_center.html',{'teacher':teacher,'id':id})
+    return render(request,'teacher_center.html')
+def student_center(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    
+    return render(request,'student_center.html')
 
-def change_password(request,id):
+def change_password(request):
     
     info={}
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    user=User.objects.get(id=id)
-    
-    if user.teacher.id:
-        goto='teacher_center'
-    elif user.student.id:
-        goto='student'
+    user=request.user
     #return HttpResponse('OK')
     if request.method=='POST':
         form=UserChangePasswordForm(request.POST)
@@ -103,4 +126,49 @@ def change_password(request,id):
                 info.setdefault('ERR','请输入正确的密码')
     else:
         form=UserChangePasswordForm()
-    return render(request,'changepassword.html',{'form':form,'info':info,'id':id,'goto':goto})
+    return render(request,'changepassword.html',{'form':form,'info':info})
+
+def change_info(request):
+    info={}
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    user=request.user
+    if request.method=='POST':
+        form=UserChangeInfoForm(request.POST)
+        #return HttpResponse(form)
+        if form.is_valid():
+            user.last_name=form['last_name'].value()
+            user.first_name=form['first_name'].value()
+            user.email=form['email'].value()
+            user.save()
+            if Teacher.objects.filter(user_id=user.id):
+                user.teacher.sex=form['sex'].value()
+                user.teacher.birth=form['birth'].value()
+                user.teacher.province=form['province'].value()
+                user.teacher.city=form['city'].value()
+                user.teacher.area=form['area'].value()
+                user.teacher.address=form['address'].value()
+                user.teacher.phone=form['phone'].value()
+                user.teacher.save()
+            elif Student.objects.filter(user_id=user.id): 
+                user.student.sex=form['sex'].value()
+                user.student.birth=form['birth'].value()
+                user.student.province=form['province'].value()
+                user.student.city=form['city'].value()
+                user.student.area=form['area'].value()
+                user.student.address=form['address'].value()
+                user.student.phone=form['phone'].value()
+                user.student.save() 
+            info.setdefault('OK','修改成功')
+        else:
+            info.setdefault('ERR','修改失败')
+    else:
+        if Teacher.objects.filter(user_id=user.id):
+            form=UserChangeInfoForm({'last_name':user.last_name,'first_name':user.first_name,'email':user.email,'sex':user.teacher.sex,'birth':user.teacher.birth,'province':user.teacher.province,'city':user.teacher.city,'area':user.teacher.area,'address':user.teacher.address,'phone':user.teacher.phone})
+        elif Student.objects.filter(user_id=user.id):
+            form=UserChangeInfoForm({'last_name':user.last_name,'first_name':user.first_name,'email':user.email,'sex':user.student.sex,'birth':user.student.birth,'province':user.student.province,'city':user.student.city,'area':user.student.area,'address':user.student.address,'phone':user.student.phone})
+    return render(request,'changeinfo.html',{'form':form,'info':info})
+def to_answer(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    
