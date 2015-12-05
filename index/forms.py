@@ -36,7 +36,7 @@ class UserForm(ModelForm):
         phone =cleaned_data.get("phone")
         if password1 and password2:
             if password1!=password2:
-                msg = u"两个密码字段不一致。"
+                msg = u"两个密码不一致。"
                 self._errors["password2"] = self.error_class([msg])
         if phone:
             if len(phone)!=11 or not phone.startswith('1'):
@@ -49,6 +49,16 @@ class UserForm(ModelForm):
 class UserLoginForm(forms.Form):
     username=forms.CharField(max_length=100)
     password=forms.CharField(widget=forms.PasswordInput)
-    class Meta:
-        model=None
-        fields='username','password',
+class UserChangePasswordForm(forms.Form):
+    oldpass=forms.CharField(widget=forms.PasswordInput)
+    newpass=forms.CharField(widget=forms.PasswordInput)
+    repeatpass=forms.CharField(widget=forms.PasswordInput)
+    def clean(self):
+        cleaned_data = super(UserChangePasswordForm, self).clean()
+        newpass = cleaned_data.get("newpass")
+        repeatpass = cleaned_data.get("repeatpass")
+        if newpass and repeatpass:
+            if newpass!=repeatpass:
+                msg = u"两个新密码不一致。"
+                self._errors["repeatpass"] = self.error_class([msg])
+    

@@ -44,6 +44,8 @@ def register(request):
         
     return render(request,'register.html',{'form':form,})
 def user_login(request):
+    #return HttpResponse(request.META['HTTP_REFERER'])
+    error=[]
     if request.method=='POST':
         form=UserLoginForm(request.POST)
         if form.is_valid():
@@ -55,13 +57,16 @@ def user_login(request):
                 if user.is_active:
                     login(request, user)
                     if user.teacher.id:
-                        return redirect(reverse('teacher_center',args=(user.id,)))
+                        
+                        return redirect(reverse('/'+request.META['HTTP_REFERER'].split('/')[4]))
                     elif user.student.id:
                         return redirect(reverse('student_center'))
+            else:
+                error.append('请输入正确的用户名和密码')
     else:
         form=UserLoginForm()
     
-    return render(request,'userlogin.html',{'form':form,})
+    return render(request,'userlogin.html',{'form':form,'error':error})
 def user_logout(request):
     logout(request)
     return redirect(reverse('user_login'))
@@ -71,4 +76,31 @@ def teacher_center(request,id):
     teacher=User.objects.get(id=id)
     img=teacher.teacher.img
     
-    return render(request,'teacher_center.html',{'teacher':teacher})
+    return render(request,'teacher_center.html',{'teacher':teacher,'id':id})
+
+def change_password(request,id):
+    
+    info={}
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    user=User.objects.get(id=id)
+    
+    if user.teacher.id:
+        goto='teacher_center'
+    elif user.student.id:
+        goto='student'
+    #return HttpResponse('OK')
+    if request.method=='POST':
+        form=UserChangePasswordForm(request.POST)
+        if form.is_valid():
+            oldpass=form['oldpass'].value()
+            newpass=make_password(form['repeatpass'].value())
+            if authenticate(username=user.username,password=oldpass):
+                user.password=newpass
+                user.save()
+                info.setdefault('OK','修改成功')
+            else:
+                info.setdefault('ERR','请输入正确的密码')
+    else:
+        form=UserChangePasswordForm()
+    return render(request,'changepassword.html',{'form':form,'info':info,'id':id,'goto':goto})
