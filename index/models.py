@@ -20,12 +20,14 @@ class Student(models.Model):
     area=models.CharField(max_length=100)
     address=models.CharField(max_length=200)
     phone=models.CharField(max_length=100)
-    img=models.ImageField(upload_to=MEDIA_ROOT+'/student/%Y/%m/%d/%H/%i/%s',default=MEDIA_URL+'/touxiang.jpg')
+    img=models.ImageField(upload_to=MEDIA_ROOT+'/student/%Y/%m/%d',default=MEDIA_URL+'/touxiang.jpg')
     user=models.OneToOneField(User)
 class Work(models.Model):
     name=models.CharField(max_length=100)
-    file=models.FileField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d/%H/%i/%s')
-    image=models.ImageField(upload_to=MEDIA_ROOT+'/workimg/%Y/%m/%d/%H/%i/%s',null=True)
+    desc=models.CharField(max_length=100)
+    content=models.TextField()
+    file=models.FileField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d',null=True)
+    image=models.ImageField(upload_to=MEDIA_ROOT+'/workimg/%Y/%m/%d',null=True)
     student=models.ForeignKey(Student)
 class Comment(models.Model):
     content=models.CharField(max_length=500)

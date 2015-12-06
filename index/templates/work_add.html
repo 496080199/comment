@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block head %}
+<script type="text/javascript">
+function disp_success()
+{
+alert("添加成功")
+}
+</script>
+{% endblock %}
+
+{% block body %}
+{% if info == 'OK' %}
+<body onload="disp_success();self.location='{% url 'user_login' %}'; ">
+{% else %}
+<body>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" data-ajax="false" action="{% url 'to_ask' %}">{% csrf_token %}
+<div style="text-align:center;">提交问题</div>
+	<label>名称:</label>{{form.name}}{{form.name.errors}}   
+	<label>简述(选填）:</label>{{form.desc}}{{form.desc.errors}}  
+	<label>详细内容:</label>{{form.content}}{{form.content.errors}}
+	<label>视频或音频（可选）:</label>{{form.file}}{{form.file.errors}}  
+	<label>截图（可选）:</label>{{form.image}}{{form.image.errors}} 
+	<br>
+	<br>
+	<button type="submit" data-theme="b" >提交</button>
+	<a href="{% url 'user_login' %}" data-role="button">返回</a>
+</form>
+{% endblock %}

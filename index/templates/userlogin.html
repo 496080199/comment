@@ -4,7 +4,7 @@
     <div style="text-align:center;">登陆</div>
     <label>用户名</label>{{form.username}}{{form.username.errors}}
     <label>密码</label>{{form.password}}{{form.password.errors}}
-    <a href="{% url 'register' %}" >还没有账号请点我</a>
+    <a href="{% url 'register' %}" data-ajax="false">还没有账号请点我</a>
     {% for item in error %}
     <p style="color:red;">{{item}}</p>
     {% endfor %}

@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>问题列表<h3>
-    <ol data-role="listview">
-    {% for work in works %}
-      <li><a href="#">{{work.name}}------发布人：{{work.student.user.last_name}}</a></li>
-     {% endfor %}
+    <h3>主页<h3>
+    
 {% endblock %}

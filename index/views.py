@@ -9,9 +9,8 @@ from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 def index(request):
-    works=Work.objects.all()
     
-    return render(request,'index.html',{'works':works})
+    return render(request,'index.html')
 
 def logined(r):
     if r.user.is_authenticated():
@@ -171,4 +170,41 @@ def change_info(request):
 def to_answer(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
+    works=Work.objects.all()
+    return render(request,'work.html',{'works':works})
+def to_ask(request):
+    info=''
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    if request.method=='POST':
+        form=WorkForm(request.POST,request.FILES)
+        if form.is_valid():
+            work=Work(student=request.user.student)
+            work.name=form['name'].value()
+            work.desc=form['desc'].value()
+            work.content=form['content'].value()
+            work.file=form['file'].value()
+            work.image=form['image'].value()
+            work.save()
+            info='OK'    
+    else:
+        form=WorkForm()
+    return render(request,'work_add.html',{'form':form,'info':info})
+def my_ask(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    works=request.user.student.work_set.all()
+    return render(request,'my_work.html',{'works':works})
+def del_ask(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    if work.file:
+        os.remove(work.file.name)
+    if work.image:
+        os.remove(work.image.name)
+    work.delete()
+    return redirect(reverse('my_ask'))
+
+    
     

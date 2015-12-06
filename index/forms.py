@@ -3,6 +3,7 @@ from index.models import *
 from django import forms
 from django.contrib.auth.models import User
 from django.forms.models import ModelForm
+import os
 #from captcha.fields import *
 
 
@@ -85,3 +86,20 @@ class UserChangeInfoForm(forms.Form):
                 msg=u"您输入的电话号码有误"
                 self._errors["phone"] = self.error_class([msg])  
         return cleaned_data
+class WorkForm(ModelForm):
+    desc=forms.CharField(required=False)
+    file=forms.FileField(required=False)
+    image=forms.ImageField(required=False)
+    def clean_file(self):
+        cfile=self.cleaned_data['file']
+        if cfile:
+            file_name_suffix=os.path.splitext(cfile.name)[1].lower()
+            if file_name_suffix =='.mp4':
+                return file
+            if file_name_suffix =='.wav':
+                return file
+            raise forms.ValidationError(u"只能上传mp4视频文件或wav音频文件。")
+        return file
+    class Meta:
+        model=Work
+        fields='name','desc','content','file','image',

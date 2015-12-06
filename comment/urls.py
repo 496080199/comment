@@ -27,5 +27,9 @@ urlpatterns = [
     url(r'^student_center$','index.views.student_center',name='student_center'),
     url(r'^change_password$','index.views.change_password',name='change_password'),
     url(r'^change_info$','index.views.change_info',name='change_info'),
+    url(r'^to_answer$','index.views.to_answer',name='to_answer'),
+    url(r'^to_ask$','index.views.to_ask',name='to_ask'),
+    url(r'^my_ask$','index.views.my_ask',name='my_ask'),
+    url(r'^del_ask/([0-9]+)$','index.views.del_ask',name='del_ask'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 
