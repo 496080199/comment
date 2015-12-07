@@ -3,6 +3,7 @@ from index.models import *
 from django import forms
 from django.contrib.auth.models import User
 from django.forms.models import ModelForm
+import os
 #from captcha.fields import *
 
 
@@ -13,8 +14,8 @@ class UserForm(ModelForm):
             ('teacher','老师'),
             )
     sex_list=(
-            ('male','男'),
-            ('female','女'),
+            ('男','男'),
+            ('女','女'),
             )
     password1=forms.CharField(label='密码',widget=forms.PasswordInput)
     password2=forms.CharField(label='重复输入密码',widget=forms.PasswordInput)
@@ -23,8 +24,9 @@ class UserForm(ModelForm):
     email=forms.EmailField(required=True)
     sex=forms.ChoiceField(choices=sex_list)
     birth=forms.DateField(widget=forms.DateInput)
-    province=forms.CharField(max_length=50)
-    city=forms.CharField(max_length=50)
+    province=forms.CharField(max_length=100)
+    city=forms.CharField(max_length=100)
+    area=forms.CharField(max_length=100)
     address=forms.CharField(max_length=500)
     phone=forms.CharField(max_length=100)
     type=forms.ChoiceField(choices=type_list)
@@ -61,4 +63,43 @@ class UserChangePasswordForm(forms.Form):
             if newpass!=repeatpass:
                 msg = u"两个新密码不一致。"
                 self._errors["repeatpass"] = self.error_class([msg])
-    
+class UserChangeInfoForm(forms.Form):
+    sex_list=(
+            ('男','男'),
+            ('女','女'),
+            )
+    last_name=forms.CharField(max_length=100)
+    first_name=forms.CharField(max_length=100)
+    email=forms.EmailField()
+    sex=forms.ChoiceField(choices=sex_list)
+    birth=forms.DateField(widget=forms.DateInput)
+    province=forms.CharField(max_length=100)
+    city=forms.CharField(max_length=100)
+    area=forms.CharField(max_length=100)
+    address=forms.CharField(max_length=500)
+    phone=forms.CharField(max_length=100)
+    def clean(self):
+        cleaned_data = super(UserChangeInfoForm, self).clean()
+        phone =cleaned_data.get("phone")
+        if phone:
+            if len(phone)!=11 or not phone.startswith('1'):
+                msg=u"您输入的电话号码有误"
+                self._errors["phone"] = self.error_class([msg])  
+        return cleaned_data
+class WorkForm(ModelForm):
+    desc=forms.CharField(required=False)
+    file=forms.FileField(required=False)
+    image=forms.ImageField(required=False)
+    def clean_file(self):
+        cfile=self.cleaned_data['file']
+        if cfile:
+            file_name_suffix=os.path.splitext(cfile.name)[1].lower()
+            if file_name_suffix =='.mp4':
+                return file
+            if file_name_suffix =='.wav':
+                return file
+            raise forms.ValidationError(u"只能上传mp4视频文件或wav音频文件。")
+        return file
+    class Meta:
+        model=Work
+        fields='name','desc','content','file','image',

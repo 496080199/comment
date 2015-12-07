@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+    <label>标题:</label>{{work.name}}<br><br>
+    <label>简述:</label><br>
+    {{work.desc}}<br>
+    <label>详细内容:</label><br>
+    {{work.content}}<br>
+    <label>视频或音频:</label><br>
+    {% if work.getfilesuffix == '.mp4' %} 
+    <video src="{{media_url}}{{work.file|cut:media_root}}" width="320" height="240" controls>
+ 	<source type=video/mp4 />
+ 	您的浏览器不支持播放此视频
+ 	</video><br>
+ 	{% endif %}
+ 	{% if work.getfilesuffix == '.wav' %}
+    <audio src="{{media_url}}{{work.file|cut:media_root}}" controls>
+	不支持此音频
+ 	</audio><br>
+ 	{% endif %}
+ 	<label>截图:</label><br>
+ 	{% if work.image and work.image.name != 'False' %}
+ 	<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
+ 	{% endif %}
+    <br>
+    <br>
+    <a href="{% url 'edit_ask' work.id %}" data-role="button" data-theme="b" data-ajax="false">编辑</a>
+    <a href="#" data-role="button" data-theme="a">删除</a>
+    <br>
+    <a href="{% url 'my_ask' %}" data-role="button">返回</a>
+    
+{% endblock %}

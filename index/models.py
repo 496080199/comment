@@ -1,28 +1,39 @@
 from django.db import models
 from comment.settings import MEDIA_ROOT, MEDIA_URL
 from django.contrib.auth.models import User
+import os
 # Create your models here.
 class Teacher(models.Model):
     sex=models.CharField(max_length=100)
     birth=models.DateField()
+    province=models.CharField(max_length=100)
+    city=models.CharField(max_length=100)
+    area=models.CharField(max_length=100)
     address=models.CharField(max_length=200)
     phone=models.CharField(max_length=100)
-    height=models.PositiveIntegerField(default=30)
-    width=models.PositiveIntegerField(default=30)
-    img=models.ImageField(upload_to=MEDIA_ROOT+'/teacher/%Y/%m/%d/%H/%i/%s',height_field='height',width_field='width',default=MEDIA_URL+'/touxiang.jpg')
+    img=models.ImageField(upload_to=MEDIA_ROOT+'/teacher/%Y/%m/%d',default=MEDIA_ROOT+'/touxiang.jpg')
     user=models.OneToOneField(User)
 class Student(models.Model):
     sex=models.CharField(max_length=100)
     birth=models.DateField()
+    province=models.CharField(max_length=100)
+    city=models.CharField(max_length=100)
+    area=models.CharField(max_length=100)
     address=models.CharField(max_length=200)
     phone=models.CharField(max_length=100)
-    img=models.ImageField(upload_to=MEDIA_ROOT+'/student/%Y/%m/%d/%H/%i/%s',height_field='30',width_field='30',default=MEDIA_ROOT+'/touxiang.jpg')
+    img=models.ImageField(upload_to=MEDIA_ROOT+'/student/%Y/%m/%d',default=MEDIA_ROOT+'/touxiang.jpg')
     user=models.OneToOneField(User)
 class Work(models.Model):
     name=models.CharField(max_length=100)
-    file=models.FileField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d/%H/%i/%s')
-    image=models.ImageField(upload_to=MEDIA_ROOT+'/workimg/%Y/%m/%d/%H/%i/%s',null=True)
+    desc=models.CharField(max_length=100)
+    content=models.TextField()
+    file=models.FileField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d',null=True,blank=True)
+    image=models.ImageField(upload_to=MEDIA_ROOT+'/workimg/%Y/%m/%d',null=True,blank=True)
+    time=models.DateTimeField(auto_now=True)
     student=models.ForeignKey(Student)
+    def getfilesuffix(self):
+        file_name_suffix=os.path.splitext(self.file.name)[1].lower()
+        return file_name_suffix
 class Comment(models.Model):
     content=models.CharField(max_length=500)
     work=models.ForeignKey(Work)

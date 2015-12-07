@@ -2,14 +2,14 @@
 {% block content %}
 <h2 style="text-align:center;">教师个人中心</h2>
 <hr />
-<div style="text-align:center;"><img src="{{teacher.teacher.img}}" alt="头像" height="100" width="100" /></div>
-<div style="text-align:center;">尊敬的{{teacher.last_name}}老师，您好！欢迎来到教师个人中心。</div>
+<div style="text-align:center;"><img src="{{media_url}}{{user.teacher.img|cut:media_root}}" alt="头像" height="100" width="100" /></div>
+<div style="text-align:center;">尊敬的{{user.last_name}}老师，您好！欢迎来到教师个人中心。</div>
 <br>
 <div>
 <ul data-role="listview">
-      <li><a href="{% url 'change_password' id %}" data-ajax="false">修改密码</a></li>
-      <li><a href="#">修改个人资料</a></li>
-      <li><a href="#">去答疑</a></li>
+      <li><a href="{% url 'change_password' %}" data-ajax="false">修改密码</a></li>
+      <li><a href="{% url 'change_info' %}" data-ajax="false">修改个人资料</a></li>
+      <li><a href="{% url 'to_answer' %}" data-ajax="false">去答疑</a></li>
       <li><a href="#">我申请的答疑</a></li>
       <li><a href="#">我完成的答疑</a></li>
     </ul>

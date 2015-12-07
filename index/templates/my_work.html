@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>我的问题列表：<h3>
+    <ol data-role="listview">
+    {% for work in works %}
+    <li><a href="{% url 'show_ask' work.id %}" data-ajax="false">{{work.name}}</a><a href="{% url 'del_ask' work.id %}" onclick="if(confirm('确定删除?')==false) return false;" data-icon="delete" data-ajax="false">删除</a></li>
+    {% endfor %}
+    <a href="{% url 'user_login' %}" data-role="button">返回</a>
+{% endblock %}
