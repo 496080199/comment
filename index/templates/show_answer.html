@@ -3,6 +3,7 @@
     <label>标题:</label>{{work.name}}<br><br>
     <label>简述:</label><br>
     {{work.desc}}<br>
+    {% if applicate.stat == 1 %}
     <label>详细内容:</label><br>
     {{work.content}}<br>
     <label>视频或音频:</label><br>
@@ -28,21 +29,17 @@
      {% else %}
      <p>无</p>
      {% endif %}
-    <br>
-    <br>
-    <br>
-    {% if work.status == 1 %}
-    <a href="{% url 'edit_ask' work.id %}" data-role="button" data-theme="b" data-ajax="false">编辑</a>
-    <a href="{% url 'del_ask' work.id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">删除</a>
+    {% elif applicate.stat == 2 %}
+    <p>您已被拒绝答疑</p>
+    {% elif applicate.stat == 0 %}
+    <p>正在申请答疑中</p>
+    {% else %}
+    <a href="{% url 'app_answer' id %}" data-role="button" data-theme="b" data-ajax="false">申请答疑</a>
     {% endif %}
-    {% if work.status == 2 %}
-    <form method="post"  data-ajax="false" action="{% url 'addit_ask' work.id %}">{% csrf_token %}
-    <label>增加说明:</label>
-    <input type="text" name="addit" value="{% if work.addit %}{{work.addit}}{% else %}{% endif %}" />
-    <button type="submit" data-theme="b" >提交</button>
-    </form>
-    {% endif %}
+    
     <br>
-    <a href="{% url 'my_ask' %}" data-role="button">返回</a>
+    <br>
+    
+    <a href="{% url 'to_answer' %}" data-role="button">返回</a>
     
 {% endblock %}

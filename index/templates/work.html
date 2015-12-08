@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-    <h3>问题列表：<h3>
-    <ol data-role="listview">
-    {% for work in works %}
-    <li><a href="#">{{work.name}}</a></li>
-    
-    {% endfor %}
-{% endblock %}

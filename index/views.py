@@ -172,8 +172,29 @@ def change_info(request):
 def to_answer(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=Work.objects.all()
-    return render(request,'work.html',{'works':works})
+    works=Work.objects.filter(status=1)
+    return render(request,'answer.html',{'works':works})
+def show_answer(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    try:
+        applicate=work.applicate_set.get(teacher_id=request.user.teacher.id)
+    except Exception:
+        applicate=None
+    
+    return render(request,'show_answer.html',{'work':work,'id':id,'applicate':applicate})
+def app_answer(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    app=Applicate()
+    app.work=work
+    app.teacher=request.user.teacher
+    app.stat=0
+    app.save()
+    return redirect(reverse('show_answer',args=(id,)))
+        
 def to_ask(request):
     info=''
     if not request.user.is_authenticated():
@@ -195,7 +216,7 @@ def to_ask(request):
 def my_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=request.user.student.work_set.all()
+    works=request.user.student.work_set.filter(status__gt=0)
     return render(request,'my_work.html',{'works':works})
 def show_ask(request,id):
     if not request.user.is_authenticated():
@@ -233,28 +254,25 @@ def edit_ask(request,id):
                     if work.image:
                         os.remove(work.image.name)
                     work.image=nimage 
-                
-            
-            
-                    
-
-                
-
             work.save()
             info='OK'
             
     else:
         form=WorkForm(instance=work)
     return render(request,'edit_ask.html',{'form':form,'info':info,'id':id})   
-def del_ask(request,id):
+def addit_ask(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    if work.file:
-        os.remove(work.file.name)
-    if work.image:
-        os.remove(work.image.name)
-    work.delete()
+    if request.method=='POST':
+        work.addit=request.POST['addit']
+        work.save()
+    return redirect(reverse('show_ask',args=(id,)))
+        
+def del_ask(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    Work.objects.filter(id=id).update(status=0)
     return redirect(reverse('my_ask'))
 
     

@@ -30,6 +30,8 @@ class Work(models.Model):
     file=models.FileField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d',null=True,blank=True)
     image=models.ImageField(upload_to=MEDIA_ROOT+'/workimg/%Y/%m/%d',null=True,blank=True)
     time=models.DateTimeField(auto_now=True)
+    status=models.IntegerField(default=1)
+    addit=models.TextField(null=True)
     student=models.ForeignKey(Student)
     def getfilesuffix(self):
         file_name_suffix=os.path.splitext(self.file.name)[1].lower()
@@ -44,10 +46,10 @@ class Evluate(models.Model):
     teacher=models.OneToOneField(Teacher)
 class Applicate(models.Model):
     teacher=models.ForeignKey(Teacher)
-    content=models.CharField(max_length=500)
-    ispass=models.BooleanField()
+    time=models.DateTimeField(auto_now=True)
+    stat=models.IntegerField()
     work=models.ForeignKey(Work)
-    student=models.ForeignKey(Student)
+
     
     
     

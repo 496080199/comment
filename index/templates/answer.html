@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>我的问题列表：<h3>
+    <h3>可回答的问题列表：<h3>
     <ol data-role="listview">
     {% for work in works %}
-    <li><a href="{% url 'show_ask' work.id %}" data-ajax="false">{{work.name}}</a></li>
+    <li><a href="{% url 'show_answer' work.id %}" data-ajax="false">{{work.name}}</a></li>
+    
     {% endfor %}
     <a href="{% url 'user_login' %}" data-role="button">返回</a>
 {% endblock %}
