@@ -28,7 +28,7 @@ class Work(models.Model):
     desc=models.CharField(max_length=100)
     content=models.TextField()
     file=models.FileField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d',null=True,blank=True)
-    image=models.ImageField(upload_to=MEDIA_ROOT+'/workimg/%Y/%m/%d',null=True,blank=True)
+    image=models.ImageField(upload_to=MEDIA_ROOT+'/work/%Y/%m/%d',null=True,blank=True)
     time=models.DateTimeField(auto_now=True)
     status=models.IntegerField(default=1)
     addit=models.TextField(null=True)
@@ -37,9 +37,13 @@ class Work(models.Model):
         file_name_suffix=os.path.splitext(self.file.name)[1].lower()
         return file_name_suffix
 class Comment(models.Model):
-    content=models.CharField(max_length=500)
+    content=models.TextField()
+    file=models.FileField(upload_to=MEDIA_ROOT+'/comment/%Y/%m/%d',null=True,blank=True)
+    image=models.ImageField(upload_to=MEDIA_ROOT+'/comment/%Y/%m/%d',null=True,blank=True)
+    status=models.IntegerField(default=1)
+    time=models.DateTimeField(auto_now=True)
     work=models.ForeignKey(Work)
-    teacher=models.OneToOneField(Teacher)
+    teacher=models.ForeignKey(Teacher)
 class Evluate(models.Model):
     content=models.CharField(max_length=500)
     student=models.ForeignKey(Student)

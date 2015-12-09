@@ -32,8 +32,23 @@
     <br>
     <br>
     {% if work.status == 1 %}
+
+     
     <a href="{% url 'edit_ask' work.id %}" data-role="button" data-theme="b" data-ajax="false">编辑</a>
     <a href="{% url 'del_ask' work.id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">删除</a>
+    <label>已收到申请</lable>:
+    {% if count != 0 %}
+    {{count}}
+    {% else %}
+    	无
+    {% endif %}
+     <label>已同意申请</lable>:
+     {% if n != 0 %}
+     {{n}}
+     {% else %}
+   		  无
+     {% endif %}
+     <a href="{% url 'manage_app' work.id %}" data-role="button" data-theme="b" data-ajax="false">申请管理</a>
     {% endif %}
     {% if work.status == 2 %}
     <form method="post"  data-ajax="false" action="{% url 'addit_ask' work.id %}">{% csrf_token %}

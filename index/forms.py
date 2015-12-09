@@ -103,3 +103,20 @@ class WorkForm(ModelForm):
     class Meta:
         model=Work
         fields='name','desc','content','file','image',
+        
+class CommentForm(ModelForm):
+    file=forms.FileField(required=False)
+    image=forms.ImageField(required=False)
+    def clean_file(self):
+        cfile=self.cleaned_data['file']
+        if cfile:
+            file_name_suffix=os.path.splitext(cfile.name)[1].lower()
+            if file_name_suffix =='.mp4':
+                return file
+            if file_name_suffix =='.wav':
+                return file
+            raise forms.ValidationError(u"只能上传mp4视频文件或wav音频文件。")
+        return file
+    class Meta:
+        model=Comment
+        fields='content','file','image',

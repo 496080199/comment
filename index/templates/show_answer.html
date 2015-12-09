@@ -4,6 +4,7 @@
     <label>简述:</label><br>
     {{work.desc}}<br>
     {% if applicate.stat == 1 %}
+    {% if applicate.work.status == 2 %}
     <label>详细内容:</label><br>
     {{work.content}}<br>
     <label>视频或音频:</label><br>
@@ -29,10 +30,20 @@
      {% else %}
      <p>无</p>
      {% endif %}
+     {% if n == 0 %}
+     <a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">提交评论</a>
+     {% elif n == 1 %}
+     <a href="{% url 'edit_com' id %}" data-role="button" data-theme="b" data-ajax="false">修改评论</a>
+     <a href="{% url 'del_com' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-theme="a" data-ajax="false">删除评论</a>
+     {% endif %}
+     {% else %}
+     <p>您的申请已初步通过，待进一步确认</p>
+     {% endif %}
     {% elif applicate.stat == 2 %}
     <p>您已被拒绝答疑</p>
     {% elif applicate.stat == 0 %}
     <p>正在申请答疑中</p>
+    <a href="{% url 'del_answer' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">取消申请</a>
     {% else %}
     <a href="{% url 'app_answer' id %}" data-role="button" data-theme="b" data-ajax="false">申请答疑</a>
     {% endif %}
@@ -40,6 +51,6 @@
     <br>
     <br>
     
-    <a href="{% url 'to_answer' %}" data-role="button">返回</a>
+    <a href="#" data-role="button" data-rel="back">返回</a>
     
 {% endblock %}

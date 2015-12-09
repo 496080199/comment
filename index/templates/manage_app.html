@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>申请列表：<h3>
+    {% for app in apps %}
+    <div data-role="collapsible">
+    <h4>{{app.teacher.user.last_name}}老师的申请{% if app.stat == 1 %}(已同意）{% elif app.stat == 2%}(已拒绝）{% endif %}</h4>
+    <ul data-role="listview">
+    {% if app.stat == 0 %}
+      <li><a href="{% url 'auth_app' app.id 1 %}" data-ajax="false">同意</a></li>
+      <li><a href="{% url 'auth_app' app.id 0 %}" data-ajax="false">拒绝</a></li>
+    {% elif app.stat == 1 %}
+    	<li><a href="{% url 'auth_app' app.id 0 %}" data-ajax="false">拒绝</a></li>
+    {% elif app.stat == 2 %}
+    <li><a href="{% url 'auth_app' app.id 1 %}" data-ajax="false">同意</a></li>
+    {% endif %}
+    </ul>
+  </div>
+  {% endfor %}
+  {% if info == 'ERR' %}
+  <label>错误：您必须同意三个申请</label>
+  {% endif %}
+  <form method="post" action="{% url 'manage_app' work.id %}" data-ajax="false">{% csrf_token %}
+  <button type="submit"data-theme="b">结束申请</button>
+  </form>
+   
+   
+    <a href="#" data-role="button" data-rel="back">返回</a>
+{% endblock %}

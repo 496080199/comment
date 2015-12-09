@@ -172,7 +172,8 @@ def change_info(request):
 def to_answer(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=Work.objects.filter(status=1)
+    works=Work.objects.filter(status=1).exclude(applicate__teacher=request.user.teacher)
+    #return HttpResponse(works)
     return render(request,'answer.html',{'works':works})
 def show_answer(request,id):
     if not request.user.is_authenticated():
@@ -182,8 +183,12 @@ def show_answer(request,id):
         applicate=work.applicate_set.get(teacher_id=request.user.teacher.id)
     except Exception:
         applicate=None
+    n=0
+    if work.comment_set.filter(teacher=request.user.teacher):
+        n=1
+        
     
-    return render(request,'show_answer.html',{'work':work,'id':id,'applicate':applicate})
+    return render(request,'show_answer.html',{'work':work,'id':id,'applicate':applicate,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n})
 def app_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -193,8 +198,86 @@ def app_answer(request,id):
     app.teacher=request.user.teacher
     app.stat=0
     app.save()
+    return redirect(reverse('to_answer'))
+def del_answer(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    app=request.user.teacher.applicate_set.filter(work=work)
+    app.delete()
+    return redirect(reverse('my_applicate'))
+def my_applicate(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    apps=request.user.teacher.applicate_set.all()
+    return render(request,'my_applicate.html',{'apps':apps}) 
+def to_com(request,id):
+    info=''
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    if request.method=='POST':
+        form=CommentForm(request.POST,request.FILES)
+        if form.is_valid():
+            com=Comment()
+            com.work=work
+            com.teacher=request.user.teacher
+            com.content=form['content'].value()
+            com.file=form['file'].value()
+            com.image=form['image'].value()
+            com.status=1
+            com.save()
+            info='OK' 
+            
+    else:
+        form=CommentForm()
+    return render(request,'to_com.html',{'form':form,'work':work,'info':info})
+def edit_com(request,id):
+    info=''
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    com=request.user.teacher.comment_set.get(work=work)
+    if request.method=='POST':
+        form=CommentForm(request.POST,request.FILES)
+        if form.is_valid():
+            com.content=form['content'].value()
+            nfile=form['file'].value()
+            if nfile is not None:
+                if nfile==False:
+                    if com.file:
+                        os.remove(com.file.name)
+                    com.file=None
+                else:
+                    if com.file:
+                        os.remove(com.file.name)
+                    com.file=nfile
+            nimage=form['image'].value()
+            if nimage is not None:
+                if nimage==False:
+                    if com.image:
+                        os.remove(com.image.name)
+                    com.image=None
+                else:
+                    if com.image:
+                        os.remove(com.image.name)
+                    com.image=nimage 
+            com.save()
+            info='OK'
+    else:
+        form=CommentForm(instance=com)
+    return render(request,'edit_com.html',{'form':form,'work':work,'info':info})
+def del_com(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    com=request.user.teacher.comment_set.get(work=work)
+    if com.file:
+        os.remove(com.file.name)
+    if com.image:
+        os.remove(com.image.name)
+    com.delete()
     return redirect(reverse('show_answer',args=(id,)))
-        
 def to_ask(request):
     info=''
     if not request.user.is_authenticated():
@@ -222,7 +305,45 @@ def show_ask(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    return render(request,'show_work.html',{'work':work,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+    n=0
+    count=0
+    if work.applicate_set.all():
+        count=work.applicate_set.count()
+        for app in work.applicate_set.all():
+            if app.stat==True:
+                n+=1
+    return render(request,'show_work.html',{'work':work,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n,'count':count})
+def manage_app(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    info=''
+    work=Work.objects.get(id=id)
+    apps=None
+    if work.applicate_set.all():
+        apps=work.applicate_set.all()
+    if request.method=='POST':
+        count=work.applicate_set.filter(stat=1).count()
+        if count == 3:
+            work.status=2
+            work.save()
+            for app in apps:
+                if app.stat != 1:
+                    app.stat=2
+            return redirect(reverse('show_ask',args=(id,)))
+        info='ERR'
+    return render(request,'manage_app.html',{'apps':apps,'work':work,'info':info})
+def auth_app(request,id,num):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    app=Applicate.objects.get(id=id)
+    #return HttpResponse(app.stat)
+    if int(num)==1:
+        app.stat=1
+    elif int(num)==0:
+        app.stat=2
+    app.save()
+    return redirect(reverse('manage_app',args=(app.work.id,)))
+
 def edit_ask(request,id):
     info=''
     if not request.user.is_authenticated():
