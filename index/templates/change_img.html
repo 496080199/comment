@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>修改头像:<h3>
+    <form method="post" enctype="multipart/form-data" data-ajax="false" action="{% url 'change_img' %}">{% csrf_token %}
+    
+    {{form.img}}{{form.img.errors}}
+    <button type="submit" data-theme="b" >提交</button>
+	<a href="{% url 'user_login' %}" data-role="button">返回</a>
+    </form>
+{% endblock %}

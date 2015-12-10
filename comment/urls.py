@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^student_center$','index.views.student_center',name='student_center'),
     url(r'^change_password$','index.views.change_password',name='change_password'),
     url(r'^change_info$','index.views.change_info',name='change_info'),
+    url(r'^change_img$','index.views.change_img',name='change_img'),
     url(r'^to_answer$','index.views.to_answer',name='to_answer'),
     url(r'^show_answer/([0-9]+)$','index.views.show_answer',name='show_answer'),
     url(r'^app_answer/([0-9]+)$','index.views.app_answer',name='app_answer'),

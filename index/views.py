@@ -101,6 +101,24 @@ def teacher_center(request):
         return redirect(reverse('user_login'))
     
     return render(request,'teacher_center.html',{'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+def change_img(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    user=request.user
+    if request.method=='POST':
+        form=ImgForm(request.POST,request.FILES)
+        if form.is_valid():
+            if Teacher.objects.filter(user_id=user.id):
+                user.teacher.img=form['img'].value()
+                user.teacher.save()
+            if Student.objects.filter(user_id=user.id):
+                user.student.img=form['img'].value()
+                user.student.save()
+            return redirect(reverse('user_login'))
+    else:
+        form=ImgForm()
+    return render(request,'change_img.html',{'form':form})
+        
 def student_center(request):
     
     if not request.user.is_authenticated():
@@ -172,7 +190,7 @@ def change_info(request):
 def to_answer(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=Work.objects.filter(status=1).exclude(applicate__teacher=request.user.teacher)
+    works=Work.objects.filter(status=1).exclude(applicate__teacher=request.user.teacher).order_by('-time')
     #return HttpResponse(works)
     return render(request,'answer.html',{'works':works})
 def show_answer(request,id):
@@ -216,7 +234,7 @@ def del_answer(request,id):
 def my_applicate(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    apps=request.user.teacher.applicate_set.all()
+    apps=request.user.teacher.applicate_set.all().order_by('-time')
     return render(request,'my_applicate.html',{'apps':apps}) 
 def to_com(request,id):
     info=''
@@ -351,7 +369,7 @@ def to_ask(request):
 def my_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=request.user.student.work_set.filter(status__gt=0)
+    works=request.user.student.work_set.filter(status__gt=0).order_by('-time')
     return render(request,'my_ask.html',{'works':works})
 def show_ask(request,id):
     if not request.user.is_authenticated():

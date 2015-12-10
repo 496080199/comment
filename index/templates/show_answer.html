@@ -8,7 +8,9 @@
     	<label>详细内容:</label><br>
     	{{work.content}}<br>
    	 	<label>视频或音频:</label><br>
+   	 	
     		{% if work.getfilesuffix == '.mp4' %} 
+    		
     		<video src="{{media_url}}{{work.file|cut:media_root}}" width="320" height="240" controls>
  			<source type=video/mp4 />
  			您的浏览器不支持播放此视频

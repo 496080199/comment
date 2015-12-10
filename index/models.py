@@ -11,7 +11,7 @@ class Teacher(models.Model):
     area=models.CharField(max_length=100)
     address=models.CharField(max_length=200)
     phone=models.CharField(max_length=100)
-    img=models.ImageField(upload_to=MEDIA_ROOT+'/teacher/%Y/%m/%d',default=MEDIA_ROOT+'/touxiang.jpg')
+    img=models.ImageField(upload_to=MEDIA_ROOT+'/img/%Y/%m/%d',default=MEDIA_ROOT+'/touxiang.jpg')
     score=models.IntegerField(default=0)
     user=models.OneToOneField(User)
 class Student(models.Model):
@@ -22,7 +22,7 @@ class Student(models.Model):
     area=models.CharField(max_length=100)
     address=models.CharField(max_length=200)
     phone=models.CharField(max_length=100)
-    img=models.ImageField(upload_to=MEDIA_ROOT+'/student/%Y/%m/%d',default=MEDIA_ROOT+'/touxiang.jpg')
+    img=models.ImageField(upload_to=MEDIA_ROOT+'/img/%Y/%m/%d',default=MEDIA_ROOT+'/touxiang.jpg')
     score=models.IntegerField(default=0)
     user=models.OneToOneField(User)
 class Work(models.Model):

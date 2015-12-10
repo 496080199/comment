@@ -2,8 +2,11 @@
 {% block content %}
 <h2 style="text-align:center;">教师个人中心</h2>
 <hr />
-<div style="text-align:center;"><img src="{{media_url}}{{user.teacher.img|cut:media_root}}" alt="头像" height="100" width="100" /></div>
+<div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false"><img src="{{media_url}}{{user.teacher.img|cut:media_root}}" alt="头像" height="100" width="100" /></a></div>
+<div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false">修改头像</a></div>
+<br>
 <div style="text-align:center;">尊敬的{{user.last_name}}老师，您好！欢迎来到教师个人中心。</div>
+<div style="text-align:center;">您当前分数：{{user.teacher.score}}分</div>
 <br>
 <div>
 <ul data-role="listview">
