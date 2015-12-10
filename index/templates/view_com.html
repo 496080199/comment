@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>评论列表：<h3>
+    {% for app in apps %}
+    <div data-role="collapsible">
+    <h4>{{app.teacher.user.last_name}}老师的解答</h4>
+    <label>内容：</label>
+    <div>{{app.comment.content}}</div>
+    <label>视频或音频：</label><br>
+    {% if app.comment.getfilesuffix == '.mp4' %} 
+    		<video src="{{media_url}}{{app.comment.file|cut:media_root}}" width="320" height="240" controls>
+ 			<source type=video/mp4 />
+ 			您的浏览器不支持播放此视频
+ 			</video><br>
+ 			{% endif %}
+ 			{% if app.comment.getfilesuffix == '.wav' %}
+    		<audio src="{{media_url}}{{app.comment.file|cut:media_root}}" controls>
+			不支持此音频
+ 			</audio><br>
+ 	{% endif %}
+ 	<label>图片:</label><br>
+ 	{% if app.comment.image and app.comment.image.name != 'False' %}
+ 			<img src="{{media_url}}{{app.comment.image|cut:media_root}}" alt="截图" height="300" width="300" />
+ 			{% endif %}
+
+    <form method="post" action="{% url 'score_com' app.comment.id %}" data-ajax="false">{% csrf_token %}
+    <input type="range" name="score"  value="{{app.comment.score}}" min="3" max="10">
+  	<button type="submit"data-theme="b">评分</button>
+  	</form>
+  </div>
+  {% endfor %}
+  {% if info == 'ERR' %}
+  <label>错误：您至少同意一个申请并不超过三个申请</label>
+  {% endif %}
+  
+   <form method="post" action="{% url 'view_com' work.id %}" data-ajax="false">{% csrf_token %}
+   
+  	<button type="submit"data-theme="b">完成评分</button>
+  	</form>
+   
+    <a href="#" data-role="button" data-rel="back">返回</a>
+{% endblock %}

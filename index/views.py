@@ -179,13 +179,20 @@ def show_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
+    applicate=None
     try:
-        applicate=work.applicate_set.get(teacher_id=request.user.teacher.id)
+        applicate=request.user.teacher.applicate_set.get(work=work)
     except Exception:
-        applicate=None
+        pass
     n=0
-    if work.comment_set.filter(teacher=request.user.teacher):
-        n=1
+    try:
+        com=applicate.comment
+        if com:
+            n=1
+            if com.status==2:
+                n=2
+    except Exception:
+        pass
         
     
     return render(request,'show_answer.html',{'work':work,'id':id,'applicate':applicate,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n})
@@ -216,12 +223,13 @@ def to_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
+    app=request.user.teacher.applicate_set.get(work=work)
     if request.method=='POST':
         form=CommentForm(request.POST,request.FILES)
         if form.is_valid():
             com=Comment()
             com.work=work
-            com.teacher=request.user.teacher
+            com.applicate=app
             com.content=form['content'].value()
             com.file=form['file'].value()
             com.image=form['image'].value()
@@ -237,7 +245,8 @@ def edit_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    com=request.user.teacher.comment_set.get(work=work)
+    app=request.user.teacher.applicate_set.get(work=work)
+    com=app.comment
     if request.method=='POST':
         form=CommentForm(request.POST,request.FILES)
         if form.is_valid():
@@ -271,13 +280,56 @@ def del_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    com=request.user.teacher.comment_set.get(work=work)
+    app=request.user.teacher.applicate_set.get(work=work)
+    com=app.comment
     if com.file:
         os.remove(com.file.name)
     if com.image:
         os.remove(com.image.name)
     com.delete()
     return redirect(reverse('show_answer',args=(id,)))
+def submit_com(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    applicate=request.user.teacher.applicate_set.get(work=work)
+    com=applicate.comment
+    com.status=2
+    com.save()
+    apps=work.applicate_set.filter(stat=1)
+    for app in apps:
+        try:
+            if app.comment.status!=2:
+                return redirect(reverse('show_answer',args=(id,))) 
+        except Exception:
+            return redirect(reverse('show_answer',args=(id,))) 
+    work.status=3
+    work.save()
+    return redirect(reverse('show_answer',args=(id,))) 
+def view_com(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    work=Work.objects.get(id=id)
+    apps=work.applicate_set.filter(stat=1)
+    if request.method=='POST':
+        work.status=4
+        work.student.score+=5
+        work.student.save()
+        for app in apps:
+            app.teacher.score+=app.comment.score
+            app.teacher.save()
+        work.save()
+        return redirect(reverse('show_ask',args=(id,)))
+    return render(request,'view_com.html',{'apps':apps,'work':work})
+def score_com(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    com=Comment.objects.get(id=id)
+    if request.method=='POST':
+        score=request.POST['score']
+        com.score=score
+        com.save()
+        return redirect(reverse('view_com',args=(com.applicate.work.id,)))
 def to_ask(request):
     info=''
     if not request.user.is_authenticated():
@@ -300,19 +352,29 @@ def my_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     works=request.user.student.work_set.filter(status__gt=0)
-    return render(request,'my_work.html',{'works':works})
+    return render(request,'my_ask.html',{'works':works})
 def show_ask(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
     n=0
+    m=0
+    com_count=0
     count=0
     if work.applicate_set.all():
         count=work.applicate_set.count()
         for app in work.applicate_set.all():
             if app.stat==True:
                 n+=1
-    return render(request,'show_work.html',{'work':work,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n,'count':count})
+                try:
+                     
+                    if app.comment.status==2:
+                        m+=1
+                    
+                except Exception:
+                    pass
+    com_count=count-m
+    return render(request,'show_ask.html',{'work':work,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n,'count':count,'m':m,'com_count':com_count})
 def manage_app(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -323,25 +385,22 @@ def manage_app(request,id):
         apps=work.applicate_set.all()
     if request.method=='POST':
         count=work.applicate_set.filter(stat=1).count()
-        if count == 3:
+        if count <= 3 and count > 0 :
             work.status=2
             work.save()
-            for app in apps:
-                if app.stat != 1:
-                    app.stat=2
+            
             return redirect(reverse('show_ask',args=(id,)))
         info='ERR'
     return render(request,'manage_app.html',{'apps':apps,'work':work,'info':info})
-def auth_app(request,id,num):
+def auth_app(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     app=Applicate.objects.get(id=id)
-    #return HttpResponse(app.stat)
-    if int(num)==1:
-        app.stat=1
-    elif int(num)==0:
-        app.stat=2
-    app.save()
+    if request.method=='POST':
+        stat=request.POST['stat']
+        app.stat=stat
+        app.save()#return HttpResponse(app.stat)
+    
     return redirect(reverse('manage_app',args=(app.work.id,)))
 
 def edit_ask(request,id):

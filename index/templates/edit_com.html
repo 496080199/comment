@@ -18,13 +18,14 @@ alert("提交成功")
 
 {% block content %}
 <form method="post" enctype="multipart/form-data" data-ajax="false" action="{% url 'edit_com' work.id %}">{% csrf_token %}
-<div style="text-align:center;">修改评论</div>
-	<label>评论:</label>{{form.content}}{{form.content.errors}}   
+<div style="text-align:center;">修改解答</div>
+	<label>内容:</label>{{form.content}}{{form.content.errors}}   
 	<label>视频或音频（可选）:</label>{{form.file}}{{form.file.errors}}  
 	<label>截图（可选）:</label>{{form.image}}{{form.image.errors}} 
 	<br>
 	<br>
-	<button type="submit" data-theme="b" >提交</button>
+	<button type="submit" data-theme="b" >保存</button>
+	
 	<a href="#" data-role="button" data-rel="back">返回</a>
 </form>
 {% endblock %}

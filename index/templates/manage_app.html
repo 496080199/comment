@@ -4,23 +4,30 @@
     {% for app in apps %}
     <div data-role="collapsible">
     <h4>{{app.teacher.user.last_name}}老师的申请{% if app.stat == 1 %}(已同意）{% elif app.stat == 2%}(已拒绝）{% endif %}</h4>
-    <ul data-role="listview">
-    {% if app.stat == 0 %}
-      <li><a href="{% url 'auth_app' app.id 1 %}" data-ajax="false">同意</a></li>
-      <li><a href="{% url 'auth_app' app.id 0 %}" data-ajax="false">拒绝</a></li>
-    {% elif app.stat == 1 %}
-    	<li><a href="{% url 'auth_app' app.id 0 %}" data-ajax="false">拒绝</a></li>
-    {% elif app.stat == 2 %}
-    <li><a href="{% url 'auth_app' app.id 1 %}" data-ajax="false">同意</a></li>
+    
+    <form method="post" action="{% url 'auth_app' app.id %}" data-ajax="false">{% csrf_token %}
+    <select name="stat"  data-role="slider">
+    {% if app.stat == 1 %}
+      
+      <option value="0" >拒绝</option>
+      <option value="1" selected>同意</option>
+    {% elif app.stat == 0 %}
+    <option value="0" selected>拒绝</option>
+      <option value="1">同意</option>
+      
     {% endif %}
-    </ul>
+      
+    </select>
+  	<button type="submit"data-theme="b">修改状态</button>
+  	</form>
+    
   </div>
   {% endfor %}
   {% if info == 'ERR' %}
-  <label>错误：您必须同意三个申请</label>
+  <label>错误：您至少同意一个申请并不超过三个申请</label>
   {% endif %}
   <form method="post" action="{% url 'manage_app' work.id %}" data-ajax="false">{% csrf_token %}
-  <button type="submit"data-theme="b">结束申请</button>
+  <button type="submit"data-theme="b" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">结束申请</button>
   </form>
    
    

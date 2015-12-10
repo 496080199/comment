@@ -36,13 +36,13 @@
      
     <a href="{% url 'edit_ask' work.id %}" data-role="button" data-theme="b" data-ajax="false">编辑</a>
     <a href="{% url 'del_ask' work.id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">删除</a>
-    <label>已收到申请</lable>:
+    <label>已收到申请</label>:
     {% if count != 0 %}
     {{count}}
     {% else %}
     	无
     {% endif %}
-     <label>已同意申请</lable>:
+     <label>已同意申请</label>:
      {% if n != 0 %}
      {{n}}
      {% else %}
@@ -52,10 +52,28 @@
     {% endif %}
     {% if work.status == 2 %}
     <form method="post"  data-ajax="false" action="{% url 'addit_ask' work.id %}">{% csrf_token %}
-    <label>增加说明:</label>
+    <label>编辑说明:</label>
     <input type="text" name="addit" value="{% if work.addit %}{{work.addit}}{% else %}{% endif %}" />
     <button type="submit" data-theme="b" >提交</button>
     </form>
+    <label>待提交解答</label>:
+    {% if com_count != 0 %}
+    {{com_count}}
+    {% else %}
+    	无
+    {% endif %}
+    <label>已提交解答</label>:
+    {% if m != 0 %}
+     {{m}}
+     {% else %}
+   		  无
+     {% endif %}
+    {% endif %}
+    {% if work.status == 3 %}
+    <a href="{% url 'view_com' work.id %}" data-role="button" data-theme="b" data-ajax="false">查看解答</a>
+    {% endif %}
+    {% if work.status == 4 %}
+    <p>恭喜您已完成一条问题</p>
     {% endif %}
     <br>
     <a href="{% url 'my_ask' %}" data-role="button">返回</a>

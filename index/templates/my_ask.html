@@ -1,25 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>我的问题解答</h3>
+    <h3>我的问题列表：<h3>
     <ol data-role="listview">
-    {% for app in apps %}
-    <li><a href="{% url 'show_answer' app.work.id %}" data-ajax="false">{{app.work.name}}
+    {% for work in works %}
+    <li>
+    <a href="{% url 'show_ask' work.id %}" data-ajax="false">{{work.name}}
     <span class="ui-li-count">
-    {% if app.work.status == 1 %}
+    {% if work.status == 1 %}
     申请中
-    {% elif app.work.status == 2 %}
+    {% elif work.status == 2 %}
     解答中
-    {% elif app.work.status == 3 %}
+    {% elif work.status == 3 %}
     评分中
     {% else %}
     已完成
     {% endif %}
 	</span>
-    </a></li>
+	</a>
+	</li>
     {% endfor %}
-    </ol>
-    <br>
-    <br>
     <a href="{% url 'user_login' %}" data-role="button">返回</a>
-    
 {% endblock %}
