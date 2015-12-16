@@ -4,24 +4,55 @@
     {% for app in apps %}
     <div data-role="collapsible">
     <h4>{{app.teacher.user.last_name}}老师的解答</h4>
-    <label>内容：</label>
+    <label>内容：</label><br>
     <div>{{app.comment.content}}</div>
-    <label>视频或音频：</label><br>
-    {% if app.comment.getfilesuffix == '.mp4' %} 
-    		<video src="{{media_url}}{{app.comment.file|cut:media_root}}" width="320" height="240" controls>
- 			<source type=video/mp4 />
- 			您的浏览器不支持播放此视频
- 			</video><br>
- 			{% endif %}
- 			{% if app.comment.getfilesuffix == '.wav' %}
-    		<audio src="{{media_url}}{{app.comment.file|cut:media_root}}" controls>
-			不支持此音频
- 			</audio><br>
- 	{% endif %}
+    <hr>
+    <label>视频：</label><br>
+    {% if app.comment.video %}
+<video id="really-cool-video" class="video-js vjs-default-skin" controls 
+ preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
+ data-setup='{}'>
+  <source src="{{media_url}}{{app.comment.video|cut:media_root}}" type='video/mp4'>
+  <p class="vjs-no-js">
+    To view this video please enable JavaScript, and consider upgrading to a web browser
+    that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+  </p>
+</video>
+<a href="{{media_url}}{{app.comment.video|cut:media_root}}" >点击下载</a>
+{% else %}
+无
+{% endif %}
+<br>
+   <hr>
+   <label>音频：</label><br>
+   {% if app.comment.audio %}
+   {% if app.comment.getaudiosuffix == '.wav' %}
+   <audio src="{{media_url}}{{app.comment.audio|cut:media_root}}" controls>
+	您的浏览器不支持 audio 标签。
+	</audio>
+	{% elif work.getaudiosuffix == '.mp3' %}
+	<audio src="{{media_url}}{{app.comment.audio|cut:media_root}}" controls>
+	您的浏览器不支持 audio 标签。
+	</audio>
+	{% endif %}
+	<br>
+	<a href="{{media_url}}{{app.comment.audio|cut:media_root}}" >点击下载</a>
+   {% else %}
+	无
+	{% endif %}
+	<br>
+   <hr>
  	<label>图片:</label><br>
- 	{% if app.comment.image and app.comment.image.name != 'False' %}
+ 	{% if app.comment.image %}
+ 	{% if app.comment.image.name != 'False' %}
  			<img src="{{media_url}}{{app.comment.image|cut:media_root}}" alt="截图" height="300" width="300" />
- 			{% endif %}
+ 	{% else %}
+ 	无
+ 	{% endif %}
+ 	{% else %}
+ 	无
+ 	{% endif %}
+ 	<hr>
 
     <form method="post" action="{% url 'score_com' app.comment.id %}" data-ajax="false">{% csrf_token %}
     <input type="range" name="score"  value="{{app.comment.score}}" min="3" max="10">

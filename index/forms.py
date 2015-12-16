@@ -92,35 +92,49 @@ class ImgForm(forms.Form):
     
 class WorkForm(ModelForm):
     desc=forms.CharField(required=False)
-    file=forms.FileField(required=False)
+    video=forms.FileField(required=False)
+    audio=forms.FileField(required=False)
     image=forms.ImageField(required=False)
     def clean_file(self):
-        cfile=self.cleaned_data['file']
-        if cfile:
-            file_name_suffix=os.path.splitext(cfile.name)[1].lower()
+        video=self.cleaned_data['video']
+        audio=self.cleaned_data['audio']
+        if video:
+            file_name_suffix=os.path.splitext(video.name)[1].lower()
             if file_name_suffix =='.mp4':
-                return file
+                return video
+            raise forms.ValidationError(u"只能上传mp4视频文件。")
+        if audio:
+            file_name_suffix=os.path.splitext(audio.name)[1].lower()
+            if file_name_suffix =='.mp3':
+                return audio
             if file_name_suffix =='.wav':
-                return file
-            raise forms.ValidationError(u"只能上传mp4视频文件或wav音频文件。")
-        return file
+                return audio
+            raise forms.ValidationError(u"只能上传mp3或wav音频文件。")
+        return video,audio
     class Meta:
         model=Work
-        fields='name','desc','content','file','image',
+        fields='name','desc','content','video','audio','image',
         
 class CommentForm(ModelForm):
-    file=forms.FileField(required=False)
+    video=forms.FileField(required=False)
+    audio=forms.FileField(required=False)
     image=forms.ImageField(required=False)
     def clean_file(self):
-        cfile=self.cleaned_data['file']
-        if cfile:
-            file_name_suffix=os.path.splitext(cfile.name)[1].lower()
+        video=self.cleaned_data['video']
+        audio=self.cleaned_data['audio']
+        if video:
+            file_name_suffix=os.path.splitext(video.name)[1].lower()
             if file_name_suffix =='.mp4':
-                return file
+                return video
+            raise forms.ValidationError(u"只能上传mp4视频文件。")
+        if audio:
+            file_name_suffix=os.path.splitext(audio.name)[1].lower()
+            if file_name_suffix =='.mp3':
+                return audio
             if file_name_suffix =='.wav':
-                return file
-            raise forms.ValidationError(u"只能上传mp4视频文件或wav音频文件。")
-        return file
+                return audio
+            raise forms.ValidationError(u"只能上传mp3或wav音频文件。")
+        return video,audio
     class Meta:
         model=Comment
-        fields='content','file','image',
+        fields='content','video','audio','image',

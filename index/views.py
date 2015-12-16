@@ -249,7 +249,8 @@ def to_com(request,id):
             com.work=work
             com.applicate=app
             com.content=form['content'].value()
-            com.file=form['file'].value()
+            com.video=form['video'].value()
+            com.audio=form['audio'].value()
             com.image=form['image'].value()
             com.status=1
             com.save()
@@ -269,16 +270,26 @@ def edit_com(request,id):
         form=CommentForm(request.POST,request.FILES)
         if form.is_valid():
             com.content=form['content'].value()
-            nfile=form['file'].value()
-            if nfile is not None:
-                if nfile==False:
-                    if com.file:
-                        os.remove(com.file.name)
-                    com.file=None
+            video=form['video'].value()
+            if video is not None:
+                if video==False:
+                    if com.video:
+                        os.remove(com.video.name)
+                    com.video=None
                 else:
-                    if com.file:
-                        os.remove(com.file.name)
-                    com.file=nfile
+                    if com.video:
+                        os.remove(com.video.name)
+                    com.video=video
+            audio=form['audio'].value()
+            if audio is not None:
+                if audio==False:
+                    if com.audio:
+                        os.remove(com.audio.name)
+                    com.audio=None
+                else:
+                    if com.audio:
+                        os.remove(com.audio.name)
+                    com.audio=audio
             nimage=form['image'].value()
             if nimage is not None:
                 if nimage==False:
@@ -300,8 +311,10 @@ def del_com(request,id):
     work=Work.objects.get(id=id)
     app=request.user.teacher.applicate_set.get(work=work)
     com=app.comment
-    if com.file:
-        os.remove(com.file.name)
+    if com.video:
+        os.remove(com.video.name)
+    if com.audio:
+        os.remove(com.audio.name)
     if com.image:
         os.remove(com.image.name)
     com.delete()
@@ -359,7 +372,8 @@ def to_ask(request):
             work.name=form['name'].value()
             work.desc=form['desc'].value()
             work.content=form['content'].value()
-            work.file=form['file'].value()
+            work.video=form['video'].value()
+            work.audio=form['audio'].value()
             work.image=form['image'].value()
             work.save()
             info='OK'    
@@ -432,16 +446,26 @@ def edit_ask(request,id):
             work.name=form['name'].value()
             work.desc=form['desc'].value()
             work.content=form['content'].value()
-            nfile=form['file'].value()
-            if nfile is not None:
-                if nfile==False:
-                    if work.file:
-                        os.remove(work.file.name)
-                    work.file=None
+            nvideo=form['video'].value()
+            if nvideo is not None:
+                if nvideo==False:
+                    if work.video:
+                        os.remove(work.video.name)
+                    work.video=None
                 else:
-                    if work.file:
-                        os.remove(work.file.name)
-                    work.file=nfile
+                    if work.video:
+                        os.remove(work.video.name)
+                    work.video=nvideo
+            naudio=form['audio'].value()
+            if naudio is not None:
+                if naudio==False:
+                    if work.audio:
+                        os.remove(work.audio.name)
+                    work.audio=None
+                else:
+                    if work.audio:
+                        os.remove(work.audio.name)
+                    work.audio=naudio
             nimage=form['image'].value()
             if nimage is not None:
                 if nimage==False:

@@ -1,37 +1,74 @@
 {% extends 'base.html' %}
+{% block head %}
+<link href="//cdn.bootcss.com/video.js/5.4.4/video-js.min.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/video.js/5.4.4/video.min.js"></script>
+{% endblock %}
 {% block content %}
-    <label>标题:</label>{{work.name}}<br><br>
+    <label>标题:</label>{{work.name}}
+	<hr size="4"  />
     <label>简述:</label><br>
-    {{work.desc}}<br>
+    {% if work.desc %}
+    {{work.desc}}
+    {% else %}
+    无
+    {% endif %}
+    <hr>
     {% if applicate.stat == 1 %}
     	{% if applicate.work.status == 2 %}
-    	<label>详细内容:</label><br>
-    	{{work.content}}<br>
-   	 	<label>视频或音频:</label><br>
+    	<label>详细内容:</label>
+    	{% if work.content %}
+    	{{work.content}}
+    	{% else %}
+    	无
+   	 	{% endif %}    	
+   	 	<hr>
+   	 	<label>视频:</label><br>
+   	 	{% if work.video %}
    	 	
-    		{% if work.getfilesuffix == '.mp4' %} 
-    		
-    		<video src="{{media_url}}{{work.file|cut:media_root}}" width="320" height="240" controls>
- 			<source type=video/mp4 />
- 			您的浏览器不支持播放此视频
- 			</video><br>
- 			{% endif %}
- 			{% if work.getfilesuffix == '.wav' %}
-    		<audio src="{{media_url}}{{work.file|cut:media_root}}" controls>
-			不支持此音频
- 			</audio><br>
- 			{% endif %}
+    		<video id="really-cool-video" class="video-js vjs-default-skin" controls 
+ preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
+ data-setup='{}'>
+  <source src="{{media_url}}{{work.video|cut:media_root}}" type='video/mp4'>
+  <p class="vjs-no-js">
+    To view this video please enable JavaScript, and consider upgrading to a web browser
+    that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+  </p>
+</video>
+<a href="{{media_url}}{{work.video|cut:media_root}}" data-ajax="false">点击下载</a>
+{% else %}
+无
+{% endif %}
+<hr>
+<label>音频:</label><br>
+{% if work.audio %}
+   {% if work.getaudiosuffix == '.wav' %}
+   <audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
+	您的浏览器不支持 audio 标签。
+	</audio>
+	{% elif work.getaudiosuffix == '.mp3' %}
+	<audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
+	您的浏览器不支持 audio 标签。
+	</audio>
+	{% endif %}
+	<br>
+	<a href="{{media_url}}{{work.audio|cut:media_root}}" data-ajax="false">点击下载</a>
+   {% else %}
+	无
+	{% endif %}
+	<br>
+   <hr>
  			<label>截图:</label><br>
  			{% if work.image and work.image.name != 'False' %}
  			<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
  			{% endif %}
-    		<br>
-     		<label>补充说明:</label>
+    		<hr>
+     		<label>补充说明:</label><br>
      		{% if work.addit  %}
      		{{work.addit}}
      		{% else %}
     		 <p>无</p>
      		{% endif %}
+     		<hr>
      		{% if n == 0 %}
      		<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">提交解答</a>
      		{% elif n == 1 %}
@@ -51,8 +88,13 @@
      	{% endif %}
     
     {% elif applicate.stat == 0 %}
+    {% if applicate.work.status == 2 %}
+     
     <p>正在申请答疑中</p>
     <a href="{% url 'del_answer' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">取消申请</a>
+    {% else %}
+    您未被同意回答此问题，请去回答其他问题吧
+    {% endif %}
     {% else %}
     <a href="{% url 'app_answer' id %}" data-role="button" data-theme="b" data-ajax="false">申请答疑</a>
     {% endif %}
@@ -60,6 +102,6 @@
     <br>
     <br>
     
-    <a href="#" data-role="button" data-rel="back">返回</a>
+    <a href="{% url 'my_applicate' %}" data-role="button" >返回</a>
     
 {% endblock %}
