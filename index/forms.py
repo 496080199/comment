@@ -95,22 +95,6 @@ class WorkForm(ModelForm):
     video=forms.FileField(required=False)
     audio=forms.FileField(required=False)
     image=forms.ImageField(required=False)
-    def clean_file(self):
-        video=self.cleaned_data['video']
-        audio=self.cleaned_data['audio']
-        if video:
-            file_name_suffix=os.path.splitext(video.name)[1].lower()
-            if file_name_suffix =='.mp4':
-                return video
-            raise forms.ValidationError(u"只能上传mp4视频文件。")
-        if audio:
-            file_name_suffix=os.path.splitext(audio.name)[1].lower()
-            if file_name_suffix =='.mp3':
-                return audio
-            if file_name_suffix =='.wav':
-                return audio
-            raise forms.ValidationError(u"只能上传mp3或wav音频文件。")
-        return video,audio
     class Meta:
         model=Work
         fields='name','desc','content','video','audio','image',

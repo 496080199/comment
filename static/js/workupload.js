@@ -7,9 +7,9 @@ function videoSelected() {
    else
        videoSize = (Math.round(video.size * 100 / 1024) / 100).toString() + 'KB';
 
-   document.getElementById('videoName').innerHTML = 'videoName: ' + video.name;
-   document.getElementById('videoSize').innerHTML = 'videoSize: ' + videoSize;
-   document.getElementById('videoType').innerHTML = 'videoType: ' + video.type;
+   document.getElementById('videoName').innerHTML = '视频名称: ' + video.name;
+   document.getElementById('videoSize').innerHTML = '视频大小: ' + videoSize;
+   document.getElementById('videoType').innerHTML = '视频类型: ' + video.type;
    }
 }
 
@@ -22,9 +22,9 @@ function audioSelected() {
    else
        audioSize = (Math.round(audio.size * 100 / 1024) / 100).toString() + 'KB';
 
-   document.getElementById('audioName').innerHTML = 'audioName: ' + audio.name;
-   document.getElementById('audioSize').innerHTML = 'audioSize: ' + audioSize;
-   document.getElementById('audioType').innerHTML = 'audioType: ' + audio.type;
+   document.getElementById('audioName').innerHTML = '音频名称: ' + audio.name;
+   document.getElementById('audioSize').innerHTML = '音频大小: ' + audioSize;
+   document.getElementById('audioType').innerHTML = '音频类型: ' + audio.type;
    }
 }
 
@@ -43,7 +43,27 @@ function uploadFile() {
         xhr.addEventListener("load", uploadComplete, false);
         xhr.addEventListener("error", uploadFailed, false);
         xhr.addEventListener("abort", uploadCanceled, false);
-        xhr.open("POST", "to_ask");
+        xhr.open("POST", "/to_ask");
+        xhr.send(fd);
+      }
+
+function uploadEditFile() {
+		var formobj=document.getElementById('form')
+		var id=document.getElementById('id')
+        var fd = new FormData(formobj);
+ /*       fd.append("video", document.getElementById('video').files[0]);
+        fd.append("audio", document.getElementById('audio').files[0]);
+        fd.append("name", document.getElementById('name').value);
+        fd.append("desc", document.getElementById('desc').value);
+        fd.append("content", document.getElementById('content').value);
+        fd.append("image", document.getElementById('image').files[0]);
+        */
+        var xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", uploadProgress, false);
+        xhr.addEventListener("load", uploadEditComplete, false);
+        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+        xhr.open("POST", "/edit_ask/"+parseInt(id.innerHTML));
         xhr.send(fd);
       }
 
@@ -53,20 +73,28 @@ function uploadProgress(evt) {
  		document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
 	}
     else {
-          document.getElementById('progressNumber').innerHTML = 'unable to compute';
+       document.getElementById('progressNumber').innerHTML = '无法计算';
     }
 }
 
 function uploadComplete(evt) {
         /* This event is raised when the server send back a response */
-    alert("upload complete");
+    alert("提交成功");
     window.location.href="/user_login";
+}
+function uploadEditComplete(evt) {
+        /* This event is raised when the server send back a response */
+     alert("提交成功");
+     var id=document.getElementById('id')
+	 window.location.href="/show_ask/"+parseInt(id.innerHTML);
 }
 
 function uploadFailed(evt) {
-    alert("There was an error attempting to upload the file.");
+    alert("提交失败.");
+    var id=document.getElementById('id')
+	 window.location.href="/edit_ask/"+parseInt(id.innerHTML);
 }
 
 function uploadCanceled(evt) {
-    alert("The upload has been canceled by the user or the browser dropped the connection.");
+    alert("用户已取消.");
 }

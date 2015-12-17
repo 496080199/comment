@@ -362,7 +362,6 @@ def score_com(request,id):
         com.save()
         return redirect(reverse('view_com',args=(com.applicate.work.id,)))
 def to_ask(request):
-    info=''
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     if request.method=='POST':
@@ -375,11 +374,10 @@ def to_ask(request):
             work.video=form['video'].value()
             work.audio=form['audio'].value()
             work.image=form['image'].value()
-            work.save()
-            info='OK'    
+            work.save()   
     else:
         form=WorkForm()
-    return render(request,'work_add.html',{'form':form,'info':info})
+    return render(request,'to_ask.html',{'form':form})
 def my_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -442,42 +440,27 @@ def edit_ask(request,id):
     work=Work.objects.get(id=id)
     if request.method=='POST':
         form=WorkForm(request.POST,request.FILES)
-        if form.is_valid():
-            work.name=form['name'].value()
-            work.desc=form['desc'].value()
-            work.content=form['content'].value()
-            nvideo=form['video'].value()
-            if nvideo is not None:
-                if nvideo==False:
-                    if work.video:
-                        os.remove(work.video.name)
-                    work.video=None
-                else:
-                    if work.video:
-                        os.remove(work.video.name)
-                    work.video=nvideo
-            naudio=form['audio'].value()
-            if naudio is not None:
-                if naudio==False:
-                    if work.audio:
-                        os.remove(work.audio.name)
-                    work.audio=None
-                else:
-                    if work.audio:
-                        os.remove(work.audio.name)
-                    work.audio=naudio
-            nimage=form['image'].value()
-            if nimage is not None:
-                if nimage==False:
-                    if work.image:
-                        os.remove(work.image.name)
-                    work.image=None
-                else:
-                    if work.image:
-                        os.remove(work.image.name)
-                    work.image=nimage 
-            work.save()
-            info='OK'
+        #if form.is_valid():
+        work.name=form['name'].value()
+        work.desc=form['desc'].value()
+        work.content=form['content'].value()
+        video=form['video'].value()
+        if video:
+            if work.video:
+                os.remove(work.video.name)
+            work.video=video
+        audio=form['audio'].value()
+        if audio:
+            if work.audio:
+                os.remove(work.audio.name)
+            work.audio=audio
+        image=form['image'].value()
+        if image:
+            if work.image:
+                os.remove(work.image.name)
+            work.image=image
+        work.save()
+        info='OK'
             
     else:
         form=WorkForm(instance=work)
