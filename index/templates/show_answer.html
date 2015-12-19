@@ -6,24 +6,22 @@
 {% block content %}
     <label>标题:</label>{{work.name}}
 	<hr size="4"  />
+	{% if work.desc %}
     <label>简述:</label><br>
-    {% if work.desc %}
     {{work.desc}}
-    {% else %}
-    无
-    {% endif %}
     <hr>
+    {% endif %}
     {% if applicate.stat == 1 %}
     	{% if applicate.work.status == 2 %}
-    	<label>详细内容:</label>
     	{% if work.content %}
+    	<label>详细内容:</label>
+    	
     	{{work.content}}
-    	{% else %}
-    	无
-   	 	{% endif %}    	
-   	 	<hr>
+    	<hr>
+   	 	{% endif %}  
+   	 	{% if work.video %}  	
    	 	<label>视频:</label><br>
-   	 	{% if work.video %}
+   	 	
    	 	
     		<video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
@@ -35,12 +33,10 @@
   </p>
 </video>
 <a href="{{media_url}}{{work.video|cut:media_root}}" data-ajax="false">点击下载</a>
-{% else %}
-无
-{% endif %}
 <hr>
-<label>音频:</label><br>
+{% endif %}
 {% if work.audio %}
+<label>音频:</label><br>
    {% if work.getaudiosuffix == '.wav' %}
    <audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
 	您的浏览器不支持 audio 标签。
@@ -52,23 +48,19 @@
 	{% endif %}
 	<br>
 	<a href="{{media_url}}{{work.audio|cut:media_root}}" data-ajax="false">点击下载</a>
-   {% else %}
-	无
-	{% endif %}
 	<br>
    <hr>
- 			<label>截图:</label><br>
- 			{% if work.image and work.image.name != 'False' %}
- 			<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
- 			{% endif %}
-    		<hr>
+	{% endif %}
+	{% if work.image %}
+ 	<label>截图:</label><br>
+ 	<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
+ 	<hr>
+ 	{% endif %}
+ 	{% if work.addit  %}
      		<label>补充说明:</label><br>
-     		{% if work.addit  %}
      		{{work.addit}}
-     		{% else %}
-    		 <p>无</p>
-     		{% endif %}
      		<hr>
+     		{% endif %}
      		{% if n == 0 %}
      		<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">提交解答</a>
      		{% elif n == 1 %}
@@ -84,11 +76,11 @@
      	 {% elif applicate.work.status == 4 %}
      	 <p>解答已结束，您的评分为{{applicate.comment.score}}分</p>
     	 {% else %}
-     	<p>您的申请已初步通过，待进一步确认</p>
+     	<p>正在申请答疑中</p>
      	{% endif %}
     
     {% elif applicate.stat == 0 %}
-    {% if applicate.work.status == 2 %}
+    {% if applicate.work.status == 2 or applicate.work.status == 1%}
      
     <p>正在申请答疑中</p>
     <a href="{% url 'del_answer' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">取消申请</a>

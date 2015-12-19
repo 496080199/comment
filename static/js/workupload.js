@@ -31,13 +31,6 @@ function audioSelected() {
 function uploadFile() {
 		var formobj=document.getElementById('form')
         var fd = new FormData(formobj);
- /*       fd.append("video", document.getElementById('video').files[0]);
-        fd.append("audio", document.getElementById('audio').files[0]);
-        fd.append("name", document.getElementById('name').value);
-        fd.append("desc", document.getElementById('desc').value);
-        fd.append("content", document.getElementById('content').value);
-        fd.append("image", document.getElementById('image').files[0]);
-        */
         var xhr = new XMLHttpRequest();
         xhr.upload.addEventListener("progress", uploadProgress, false);
         xhr.addEventListener("load", uploadComplete, false);
@@ -48,29 +41,49 @@ function uploadFile() {
       }
 
 function uploadEditFile() {
-		var formobj=document.getElementById('form')
-		var id=document.getElementById('id')
+		var formobj=document.getElementById('form');
+		var id=document.getElementById('id');
         var fd = new FormData(formobj);
- /*       fd.append("video", document.getElementById('video').files[0]);
-        fd.append("audio", document.getElementById('audio').files[0]);
-        fd.append("name", document.getElementById('name').value);
-        fd.append("desc", document.getElementById('desc').value);
-        fd.append("content", document.getElementById('content').value);
-        fd.append("image", document.getElementById('image').files[0]);
-        */
         var xhr = new XMLHttpRequest();
         xhr.upload.addEventListener("progress", uploadProgress, false);
         xhr.addEventListener("load", uploadEditComplete, false);
-        xhr.addEventListener("error", uploadFailed, false);
+        xhr.addEventListener("error", uploadEditFailed, false);
         xhr.addEventListener("abort", uploadCanceled, false);
         xhr.open("POST", "/edit_ask/"+parseInt(id.innerHTML));
+        xhr.send(fd);
+      }
+      
+function uploadCom(id) {
+		var formobj=document.getElementById('form')
+		var id=document.getElementById('id');
+        var fd = new FormData(formobj);
+        var xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener("progress", uploadProgress, false);
+        xhr.addEventListener("load", uploadComComplete, false);
+        xhr.addEventListener("error", uploadComFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+        xhr.open("POST", "/to_com/"+parseInt(id.innerHTML),true);
+        xhr.send(fd);
+      }
+      
+ function uploadComEdit() {
+		var formobj=document.getElementById('form'); 
+		var id=document.getElementById('id');
+        var fd = new FormData(formobj);
+        var xhr = new XMLHttpRequest();
+       	xhr.upload.addEventListener("progress", uploadProgress, false);
+       	xhr.addEventListener("load", uploadComComplete, false);
+       	xhr.addEventListener("error", uploadComFailed, false);
+        xhr.addEventListener("abort", uploadCanceled, false);
+        xhr.open("POST", "/edit_com/"+parseInt(id.innerHTML),true);
         xhr.send(fd);
       }
 
 function uploadProgress(evt) {
 	if (evt.lengthComputable) {
 		var percentComplete = Math.round(evt.loaded * 100 / evt.total);
- 		document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+		document.getElementById('bar').style.width = percentComplete + '%';
+ 		//document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
 	}
     else {
        document.getElementById('progressNumber').innerHTML = '无法计算';
@@ -88,11 +101,26 @@ function uploadEditComplete(evt) {
      var id=document.getElementById('id')
 	 window.location.href="/show_ask/"+parseInt(id.innerHTML);
 }
+function uploadComComplete(evt) {
+        /* This event is raised when the server send back a response */
+    alert("提交成功");
+    var id=document.getElementById('id')
+    window.location.href="/show_answer/"+parseInt(id.innerHTML);
+}
 
 function uploadFailed(evt) {
     alert("提交失败.");
-    var id=document.getElementById('id')
-	 window.location.href="/edit_ask/"+parseInt(id.innerHTML);
+
+}
+
+function uploadEditFailed(evt) {
+    alert("提交失败.");
+
+}
+function uploadComFailed(evt) {
+    alert("提交失败.");
+    var id=document.getElementById('id');
+	 window.location.href="/show_answer/"+parseInt(id.innerHTML);
 }
 
 function uploadCanceled(evt) {

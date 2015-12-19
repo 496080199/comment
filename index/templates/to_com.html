@@ -1,29 +1,39 @@
 {% extends 'base.html' %}
 {% block head %}
-<script type="text/javascript">
-function disp_success()
-{
-alert("提交成功")
-}
-</script>
+<script src="//cdn.bootcss.com/jquery/1.8.3/jquery.js"></script>
+<script src="//cdn.bootcss.com/jquery-validate/1.11.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/workupload.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/commentvalidate.js"></script>
+<link href="{{STATIC_URL}}css/style.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
 
-{% block body %}
-{% if info == 'OK' %}
-<body onload="disp_success();self.location='{% url 'show_answer' work.id %}'; ">
-{% else %}
-<body>
-{% endif %}
-{% endblock %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data" data-ajax="false" action="{% url 'to_com' work.id %}">{% csrf_token %}
+<div id="id" hidden>{{id}}</div>
+<form id="form" method="post" enctype="multipart/form-data" data-ajax="false" action="javascript: uploadCom()">{% csrf_token %}
 <div style="text-align:center;">提交解答</div>
-	<label>内容:</label>{{form.content}}{{form.content.errors}}   
-	<label>视频（可选）:</label>{{form.video}}{{form.video.errors}}  
-	<label>音频（可选）:</label>{{form.audio}}{{form.audio.errors}}  
+	<label>内容:</label>{{form.content}}{{form.content.errors}} 
+	<br>  
+	<label>视频（可选）:</label><input type="file" name="video" id="id_video"  onchange="videoSelected();" />{{form.video.errors}}  
+	<div id="videoName">
+        </div>
+        <div id="videoSize">
+        </div>
+        <div id="videoType">
+        </div> 
+	<label>音频（可选）:</label><input type="file" name="audio" id="id_audio"  onchange="audioSelected();" />{{form.audio.errors}} 
+	<div id="audioName">
+        </div>
+        <div id="audioSize">
+        </div>
+        <div id="audioType">
+        </div>    
 	<label>截图（可选）:</label>{{form.image}}{{form.image.errors}} 
 	<br>
+	处理进度：
+	<div class="progressbar_1"> 
+     <div id="bar" class="bar" ></div> 
+    </div>  
 	<br>
 	<button type="submit" data-theme="b" >保存</button>
 	

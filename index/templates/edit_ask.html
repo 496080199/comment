@@ -5,33 +5,25 @@
 <script src="//cdn.bootcss.com/jquery-validate/1.11.1/jquery.validate.min.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/workupload.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/workvalidate.js"></script>
+<link href="{{STATIC_URL}}css/style.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
 
 
 {% block content %}
 <form id="form" method="post" enctype="multipart/form-data" action="javascript: uploadEditFile()">{% csrf_token %}
-<div style="text-align:center;">提交问题</div>
+<div style="text-align:center;">修改问题</div>
 	<div id="id" hidden>{{id}}</div>
 	<label>名称:</label>{{form.name}}{{form.name.errors}}   
 	<label>简述(选填）:</label>{{form.desc}}{{form.desc.errors}}  
 	<label>详细内容:</label>{{form.content}}{{form.content.errors}}
-	<label>视频（可选）:</label><input type="file" name="video" id="id_video" value="{{form.video.value}}" onchange="videoSelected();" />{{form.video.errors}}  
-	<div id="videoName">
-        </div>
-        <div id="videoSize">
-        </div>
-        <div id="videoType">
-        </div> 
-	<label>音频（可选）:</label><input type="file" name="audio" id="id_audio" value="{{form.audio.value}}"  onchange="audioSelected();" />{{form.audio.errors}} 
-	<div id="audioName">
-        </div>
-        <div id="audioSize">
-        </div>
-        <div id="audioType">
-        </div>   
+	<label>视频（可选）:</label>{{form.video}}{{form.video.errors}}
+	<label>音频（可选）:</label>{{form.audio}}{{form.audio.errors}}
 	<label>截图（可选）:</label>{{form.image}}{{form.image.errors}} 
 	<br>
-	上传进度：<div id="progressNumber">
+	处理进度：
+	<div class="progressbar_1"> 
+     <div id="bar" class="bar" ></div> 
+    </div> 
 	<br>
 	<button type="submit" data-theme="b" >提交</button>
 	<a href="{% url 'show_ask' id %}" data-role="button">返回</a>

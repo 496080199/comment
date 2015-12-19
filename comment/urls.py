@@ -36,7 +36,6 @@ urlpatterns = [
     url(r'^to_ask$','index.views.to_ask',name='to_ask'),
     url(r'^my_ask$','index.views.my_ask',name='my_ask'),
     url(r'^manage_app/([0-9]+)$','index.views.manage_app',name='manage_app'),
-    url(r'^auth_app/([0-9]+)$','index.views.auth_app',name='auth_app'),
     url(r'^show_ask/([0-9]+)$','index.views.show_ask',name='show_ask'),
     url(r'^edit_ask/([0-9]+)$','index.views.edit_ask',name='edit_ask'),
     url(r'^addit_ask/([0-9]+)$','index.views.addit_ask',name='addit_ask'),
@@ -46,6 +45,7 @@ urlpatterns = [
     url(r'^del_com/([0-9]+)$','index.views.del_com',name='del_com'),
     url(r'^submit_com/([0-9]+)$','index.views.submit_com',name='submit_com'),
     url(r'^view_com/([0-9]+)$','index.views.view_com',name='view_com'),
-    url(r'^score_com/([0-9]+)$','index.views.score_com',name='score_com'),
+    url(r'^change_app_stat/([0-9]+)/([0-9]+)$','index.views.change_app_stat',name='change_app_stat'),
+    url(r'^change_com_score/([0-9]+)/([0-9]+)$','index.views.change_com_score',name='change_com_score'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 

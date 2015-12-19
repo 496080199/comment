@@ -6,13 +6,12 @@
 {% block content %}
     <label>标题:</label><b>{{work.name}}</b>
     <hr size="4"  />
-    <label>简述:</label><br>
     {% if work.desc %}
+    <label>简述:</label><br>
     {{work.desc}}
-    {% else %}
-    无
-    {% endif %}
     <hr>
+    {% endif %}
+    
     <label>详细内容:</label><br>
     {% if work.content %}
     {{work.content}}
@@ -20,25 +19,25 @@
     无
     {% endif %}
     <hr>
+    {% if work.video %}
     <label>视频:</label><br>
- {% if work.video %}
+ 
 <video id="really-cool-video" class="video-js vjs-default-skin" controls 
- preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
+  prload="metadata" width="320" height="240" 
  data-setup='{}'>
   <source src="{{media_url}}{{work.video|cut:media_root}}" type='video/mp4'>
   <p class="vjs-no-js">
     To view this video please enable JavaScript, and consider upgrading to a web browser
     that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
   </p>
-</video>
+</video><br>
 <a href="{{media_url}}{{work.video|cut:media_root}}" data-ajax="false">点击下载</a>
-{% else %}
-无
-{% endif %}
-<br>
+
+	<br>
    <hr>
-   <label>音频：</label><br>
+   {% endif %}
    {% if work.audio %}
+   <label>音频：</label><br>
    {% if work.getaudiosuffix == '.wav' %}
    <audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
 	您的浏览器不支持 audio 标签。
@@ -50,27 +49,22 @@
 	{% endif %}
 	<br>
 	<a href="{{media_url}}{{work.audio|cut:media_root}}" data-ajax="false">点击下载</a>
-   {% else %}
-	无
-	{% endif %}
 	<br>
    <hr>
+	{% endif %}
+	{% if work.image %}
  	<label>截图:</label><br>
- 	{% if work.image and work.image.name != 'False' %}
  	<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
- 	{% else %}
- 	无
- 	{% endif %}
-    <br>
+	<br>
     <hr>
+ 	{% endif %}
+    {% if work.addit  %}
      <label>补充说明:</label><br>
-     {% if work.addit  %}
+     
      {{work.addit}}
-     {% else %}
-     <p>无</p>
-     {% endif %}
-     <hr>
+	<hr>
     <br>
+     {% endif %}
     <br>
     <br>
     {% if work.status == 1 %}

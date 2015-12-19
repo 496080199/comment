@@ -45,21 +45,16 @@ jQuery.extend(jQuery.validator.messages, {
 	min: jQuery.validator.format("请输入一个最小为{0} 的值")
 });
 
-
 $().ready(function() {
  $("#form").validate({
- 		onsubmit:true,
- 		onfocusout:false,
- 		onkeyup :false,
         rules: {
-   name: "required",
    content: "required",
    video: {
    checkVideo: true,
    },
    audio: {
    checkAudio: true,
-   }
+   },
   }
     });
 });

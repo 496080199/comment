@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block head %}
+<script type="text/javascript" src="{{STATIC_URL}}js/changedata.js"></script>
+{% endblock %}
 {% block content %}
     <h3>评论列表：<h3>
     {% for app in apps %}
@@ -7,8 +10,9 @@
     <label>内容：</label><br>
     <div>{{app.comment.content}}</div>
     <hr>
-    <label>视频：</label><br>
     {% if app.comment.video %}
+    <label>视频：</label><br>
+    
 <video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
  data-setup='{}'>
@@ -19,54 +23,35 @@
   </p>
 </video>
 <a href="{{media_url}}{{app.comment.video|cut:media_root}}" >点击下载</a>
-{% else %}
-无
-{% endif %}
 <br>
    <hr>
+{% endif %}
+{% if app.comment.audio %}
    <label>音频：</label><br>
-   {% if app.comment.audio %}
-   {% if app.comment.getaudiosuffix == '.wav' %}
    <audio src="{{media_url}}{{app.comment.audio|cut:media_root}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
-	{% elif work.getaudiosuffix == '.mp3' %}
-	<audio src="{{media_url}}{{app.comment.audio|cut:media_root}}" controls>
-	您的浏览器不支持 audio 标签。
-	</audio>
-	{% endif %}
+
 	<br>
 	<a href="{{media_url}}{{app.comment.audio|cut:media_root}}" >点击下载</a>
-   {% else %}
-	无
-	{% endif %}
-	<br>
+<br>
    <hr>
+	{% endif %}
+	{% if app.comment.image %}
  	<label>图片:</label><br>
- 	{% if app.comment.image %}
- 	{% if app.comment.image.name != 'False' %}
  			<img src="{{media_url}}{{app.comment.image|cut:media_root}}" alt="截图" height="300" width="300" />
- 	{% else %}
- 	无
+<hr>
  	{% endif %}
- 	{% else %}
- 	无
- 	{% endif %}
- 	<hr>
 
-    <form method="post" action="{% url 'score_com' app.comment.id %}" data-ajax="false">{% csrf_token %}
-    <input type="range" name="score"  value="{{app.comment.score}}" min="3" max="10">
-  	<button type="submit"data-theme="b">评分</button>
-  	</form>
+
+    <input type="range" id="score" name="score"  value="{{app.comment.score}}" min="3" max="10" onchange="changeScore({{app.comment.id}})">
+
   </div>
   {% endfor %}
-  {% if info == 'ERR' %}
-  <label>错误：您至少同意一个申请并不超过三个申请</label>
-  {% endif %}
   
    <form method="post" action="{% url 'view_com' work.id %}" data-ajax="false">{% csrf_token %}
    
-  	<button type="submit"data-theme="b">完成评分</button>
+  	<button type="submit"data-theme="b" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">完成评分</button>
   	</form>
    
     <a href="#" data-role="button" data-rel="back">返回</a>

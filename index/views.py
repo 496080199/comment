@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.hashers import make_password
 from comment.settings import MEDIA_URL
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # Create your views here.
 def index(request):
@@ -237,7 +238,6 @@ def my_applicate(request):
     apps=request.user.teacher.applicate_set.all().order_by('-time')
     return render(request,'my_applicate.html',{'apps':apps}) 
 def to_com(request,id):
-    info=''
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
@@ -254,13 +254,12 @@ def to_com(request,id):
             com.image=form['image'].value()
             com.status=1
             com.save()
-            info='OK' 
             
     else:
         form=CommentForm()
-    return render(request,'to_com.html',{'form':form,'work':work,'info':info})
+    return render(request,'to_com.html',{'form':form,'work':work,'id':id,})
+
 def edit_com(request,id):
-    info=''
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
@@ -271,40 +270,36 @@ def edit_com(request,id):
         if form.is_valid():
             com.content=form['content'].value()
             video=form['video'].value()
-            if video is not None:
-                if video==False:
-                    if com.video:
-                        os.remove(com.video.name)
-                    com.video=None
-                else:
-                    if com.video:
-                        os.remove(com.video.name)
-                    com.video=video
+            if video:
+                if com.video:
+                    os.remove(com.video.name)
+                com.video=video
+            elif video==False:
+                if com.video:
+                    os.remove(com.video.name)
+                com.video=None
             audio=form['audio'].value()
-            if audio is not None:
-                if audio==False:
-                    if com.audio:
-                        os.remove(com.audio.name)
-                    com.audio=None
-                else:
-                    if com.audio:
-                        os.remove(com.audio.name)
-                    com.audio=audio
-            nimage=form['image'].value()
-            if nimage is not None:
-                if nimage==False:
-                    if com.image:
-                        os.remove(com.image.name)
-                    com.image=None
-                else:
-                    if com.image:
-                        os.remove(com.image.name)
-                    com.image=nimage 
+            if audio:
+                if com.audio:
+                    os.remove(com.audio.name)
+                com.audio=audio
+            elif audio==False:
+                if com.audio:
+                    os.remove(com.audio.name)
+                com.audio=None
+            image=form['image'].value()
+            if image:
+                if com.image:
+                    os.remove(com.image.name)
+                com.image=image
+            elif image==False:
+                if com.image:
+                    os.remove(com.image.name)
+                com.image=None
             com.save()
-            info='OK'
     else:
         form=CommentForm(instance=com)
-    return render(request,'edit_com.html',{'form':form,'work':work,'info':info})
+    return render(request,'edit_com.html',{'form':form,'work':work,'id':id})
 def del_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -352,19 +347,11 @@ def view_com(request,id):
         work.save()
         return redirect(reverse('show_ask',args=(id,)))
     return render(request,'view_com.html',{'apps':apps,'work':work})
-def score_com(request,id):
-    if not request.user.is_authenticated():
-        return redirect(reverse('user_login'))
-    com=Comment.objects.get(id=id)
-    if request.method=='POST':
-        score=request.POST['score']
-        com.score=score
-        com.save()
-        return redirect(reverse('view_com',args=(com.applicate.work.id,)))
 def to_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     if request.method=='POST':
+        
         form=WorkForm(request.POST,request.FILES)
         if form.is_valid():
             work=Work(student=request.user.student)
@@ -422,19 +409,9 @@ def manage_app(request,id):
             return redirect(reverse('show_ask',args=(id,)))
         info='ERR'
     return render(request,'manage_app.html',{'apps':apps,'work':work,'info':info})
-def auth_app(request,id):
-    if not request.user.is_authenticated():
-        return redirect(reverse('user_login'))
-    app=Applicate.objects.get(id=id)
-    if request.method=='POST':
-        stat=request.POST['stat']
-        app.stat=stat
-        app.save()#return HttpResponse(app.stat)
-    
-    return redirect(reverse('manage_app',args=(app.work.id,)))
+
 
 def edit_ask(request,id):
-    info=''
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
@@ -449,22 +426,33 @@ def edit_ask(request,id):
             if work.video:
                 os.remove(work.video.name)
             work.video=video
+        elif video==False:
+            if work.video:
+                os.remove(work.video.name)
+            work.video=None
         audio=form['audio'].value()
         if audio:
             if work.audio:
                 os.remove(work.audio.name)
             work.audio=audio
+        elif audio==False:
+            if work.audio:
+                os.remove(work.audio.name)
+            work.audio=None
         image=form['image'].value()
         if image:
             if work.image:
                 os.remove(work.image.name)
             work.image=image
+        elif image==False:
+            if work.image:
+                os.remove(work.image.name)
+            work.image=None
         work.save()
-        info='OK'
             
     else:
         form=WorkForm(instance=work)
-    return render(request,'edit_ask.html',{'form':form,'info':info,'id':id})   
+    return render(request,'edit_ask.html',{'form':form,'id':id})   
 def addit_ask(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -479,6 +467,26 @@ def del_ask(request,id):
         return redirect(reverse('user_login'))
     Work.objects.filter(id=id).update(status=0)
     return redirect(reverse('my_ask'))
-
+def change_app_stat(request,id,val):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    app=Applicate.objects.get(id=id)
+    if app.work.status==1:
+        if request.is_ajax():
+            app.stat=int(val)
+            app.save(update_fields=['stat'])
+            return HttpResponse('OK')
+    return HttpResponse('ERR')
+    
+def change_com_score(request,id,val):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    com=Comment.objects.get(id=id)
+    if com.applicate.work.status==3:
+        if request.is_ajax():
+            com.score=int(val)
+            com.save(update_fields=['score'])
+            return HttpResponse('OK')
+    return HttpResponse('ERR')
     
     

@@ -1,0 +1,12 @@
+.progressbar_1{ 
+    background-color:#eee; 
+    height:16px; 
+    width:150px; 
+    border:1px solid #bbb; 
+    color:#222; 
+} 
+.progressbar_1 .bar { 
+    background-color:#6CAF00; 
+    height:16px; 
+    width:0; 
+} 

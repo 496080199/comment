@@ -1,29 +1,18 @@
 {% extends 'base.html' %}
 {% block head %}
+<link href="{{STATIC_URL}}css/style.css" rel="stylesheet" type="text/css"/>
 <script src="//cdn.bootcss.com/jquery/1.8.3/jquery.js"></script>
-<script src="//cdn.bootcss.com/jquery-validate/1.11.1/jquery.validate.min.js"></script>
+<script src="//cdn.bootcss.com/jquery-validate/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/workvalidate.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/workupload.js"></script>
 
-<script type="text/javascript" src="{{STATIC_URL}}js/workvalidate.js"></script>
-<style>
-.progressbar_1{ 
-    background-color:#eee; 
-    height:16px; 
-    width:150px; 
-    border:1px solid #bbb; 
-    color:#222; 
-} 
-.progressbar_1 .bar { 
-    background-color:#6CAF00; 
-    height:16px; 
-    width:0; 
-} 
-</style>
+
 {% endblock %}
 
 
 {% block content %}
 <form id="form" method="post" enctype="multipart/form-data"  action="javascript: uploadFile()">{% csrf_token %}
+
 <div style="text-align:center;">提交问题</div>
 	<label>名称:</label>{{form.name}}{{form.name.errors}}   
 	<label>简述(选填）:</label>{{form.desc}}{{form.desc.errors}}  
@@ -44,10 +33,12 @@
         </div>  
 	<label>截图（可选）:</label>{{form.image}}{{form.image.errors}} 
 	<br>
-	上传进度：<div class="progressNumber"> 
-    </div> 
+	处理进度：
+	<div class="progressbar_1"> 
+     <div id="bar" class="bar" ></div> 
+    </div>  
 	<br>
-	<button type="submit" data-theme="b" class="submit">提交</button>
+	<button type="submit" data-theme="b" >提交</button>
 	<a href="{% url 'user_login' %}" data-role="button">返回</a>
 </form>
 
