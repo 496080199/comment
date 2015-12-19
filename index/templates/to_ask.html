@@ -5,11 +5,13 @@
 <script src="//cdn.bootcss.com/jquery-validate/1.14.0/jquery.validate.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/workvalidate.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/workupload.js"></script>
-
+<script src="{{STATIC_URL}}js/code.js"></script>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/code.css">
 
 {% endblock %}
-
-
+{% block body %}
+<body onload="createCode();">
+{% endblock %}
 {% block content %}
 <form id="form" method="post" enctype="multipart/form-data"  action="javascript: uploadFile()">{% csrf_token %}
 
@@ -33,12 +35,16 @@
         </div>  
 	<label>截图（可选）:</label>{{form.image}}{{form.image.errors}} 
 	<br>
+	<label>验证码</label>
+	<input type="" id="checkCode" class="code" style="width: 55px" /> <a href="#" onclick="createCode()">看不清楚</a>
+	<input type="text" id="verify" /> 
+	<br>
 	处理进度：
 	<div class="progressbar_1"> 
      <div id="bar" class="bar" ></div> 
     </div>  
 	<br>
-	<button type="submit" data-theme="b" >提交</button>
+	<button type="submit" data-theme="b" onclick="return validate();">提交</button>
 	<a href="{% url 'user_login' %}" data-role="button">返回</a>
 </form>
 

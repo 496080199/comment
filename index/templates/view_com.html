@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}
+<link href="//cdn.bootcss.com/video.js/5.4.4/video-js.min.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/video.js/5.4.4/video.min.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/changedata.js"></script>
 {% endblock %}
 {% block content %}
@@ -44,10 +46,13 @@
  	{% endif %}
 
 
-    <input type="range" id="score" name="score"  value="{{app.comment.score}}" min="3" max="10" onchange="changeScore({{app.comment.id}})">
+    <input type="range" id="score" name="score"  value="{{app.comment.score}}" min="2" max="10" onchange="changeScore({{app.comment.id}})">
 
   </div>
   {% endfor %}
+  {% if info == 'ERR' %}
+  <label style="color:red">评分总共为10分，请检查您的评分</label>
+  {% endif %}
   
    <form method="post" action="{% url 'view_com' work.id %}" data-ajax="false">{% csrf_token %}
    

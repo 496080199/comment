@@ -86,6 +86,12 @@ class UserChangeInfoForm(forms.Form):
                 msg=u"您输入的电话号码有误"
                 self._errors["phone"] = self.error_class([msg])  
         return cleaned_data
+
+class AuthForm(forms.Form):
+    cert=forms.ImageField()
+    othercert=forms.ImageField(required=False)
+    work=forms.FileField(required=False)
+    
 class ImgForm(forms.Form):
     img=forms.ImageField()
 

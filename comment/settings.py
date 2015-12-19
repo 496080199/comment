@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'comment',
-        'HOST': '192.168.1.97',
+        'HOST': '192.168.10.103',
         'PORT': '3306',
         'USER': 'comment',
         'PASSWORD': 'comment',
@@ -117,3 +117,6 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+SESSION_COOKIE_AGE=1500

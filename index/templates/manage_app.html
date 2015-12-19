@@ -8,7 +8,8 @@
     <div data-role="collapsible" data-collapsed="false">
     <h4>{{app.teacher.user.last_name}}老师的申请</h4>
     
-
+	<a href="{% url 'view_teacher' app.teacher.id %}" type="button" data-ajax="false">查看{{app.teacher.user.last_name}}老师信息</a>
+	<br>
     <select id="stat" name="stat"  data-role="slider" onchange="changeStat({{app.id}})">
     	<option value="0" {% if app.stat == 0 %}selected{% endif %}>拒绝</option>
     	<option value="1" {% if app.stat == 1 %}selected{% endif %}>同意</option>
@@ -19,7 +20,7 @@
   </div>
   {% endfor %}
   {% if info == 'ERR' %}
-  <label>错误：您至少同意一个申请并不超过三个申请</label>
+  <label style="color:red">错误：您至少同意一个申请并不超过三个申请</label>
   {% endif %}
   <form method="post" action="{% url 'manage_app' work.id %}" data-ajax="false">{% csrf_token %}
   <button type="submit"data-theme="b" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">完成申请</button>

@@ -12,6 +12,7 @@
 <ul data-role="listview">
       <li><a href="{% url 'change_password' %}" data-ajax="false">修改密码</a></li>
       <li><a href="{% url 'change_info' %}" data-ajax="false">修改个人资料</a></li>
+      <li><a href="{% url 'auth_teacher' %}" data-ajax="false">教师认证({% if user.teacher.auth == 1 %}已认证{% elif user.teacher.auth == 2 %}认证失败{% else %}待认证{% endif %})</a></li>
       <li><a href="{% url 'to_answer' %}" data-ajax="false">去申请解答</a></li>
       <li><a href="{% url 'my_applicate' %}">我的问题解答</a></li>
     </ul>

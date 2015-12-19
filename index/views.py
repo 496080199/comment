@@ -77,16 +77,9 @@ def user_login(request):
                 if user.is_active:
                     login(request, user)    
                     if Teacher.objects.filter(user_id=user.id):
-                        address=reverse('teacher_center')
-                        if request.META.has_key('HTTP_ORIGIN'):
-                            address=request.META['HTTP_ORIGIN']
-                        return redirect(address)
-
+                        return redirect(reverse('teacher_center'))
                     elif Student.objects.filter(user_id=user.id):
-                            address=reverse('student_center')
-                            if request.META.has_key('HTTP_ORIGIN'):
-                                address=request.META['HTTP_ORIGIN']
-                            return redirect(address)
+                        return redirect(reverse('student_center'))
             else:
                 error.append('请输入正确的用户名和密码')
     else:
@@ -102,6 +95,33 @@ def teacher_center(request):
         return redirect(reverse('user_login'))
     
     return render(request,'teacher_center.html',{'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+def auth_teacher(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    teacher=request.user.teacher
+    if request.method=='POST':
+        form=AuthForm(request.POST,request.FILES)
+        if form.is_valid():
+            if teacher.auth==2:
+                teacher.auth=0
+            teacher.cert=form['cert'].value()
+            teacher.othercert=form['othercert'].value()
+            teacher.work=form['work'].value()
+            teacher.save()
+            return redirect(reverse('user_login'))
+    else:
+        form=AuthForm({'cert':teacher.cert,'othercert':teacher.othercert,'work':teacher.work})
+    return render(request,'auth_teacher.html',{'form':form,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+def view_teacher(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    teacher=Teacher.objects.get(id=id)
+    apps=teacher.applicate_set.filter(stat=1)
+    coms=0
+    for app in apps:
+        if app.comment.status==2:
+            coms+=1
+    return render(request,'view_teacher.html',{'teacher':teacher,'coms':coms,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
 def change_img(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -197,6 +217,8 @@ def to_answer(request):
 def show_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
+    if request.user.teacher.auth!=1:
+        return redirect(reverse('auth_teacher'))
     work=Work.objects.get(id=id)
     applicate=None
     try:
@@ -224,7 +246,7 @@ def app_answer(request,id):
     app.teacher=request.user.teacher
     app.stat=0
     app.save()
-    return redirect(reverse('to_answer'))
+    return redirect(reverse('my_applicate'))
 def del_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -333,20 +355,27 @@ def submit_com(request,id):
     work.save()
     return redirect(reverse('show_answer',args=(id,))) 
 def view_com(request,id):
+    info=''
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
     apps=work.applicate_set.filter(stat=1)
     if request.method=='POST':
-        work.status=4
-        work.student.score+=5
-        work.student.save()
+        scores=0
         for app in apps:
-            app.teacher.score+=app.comment.score
-            app.teacher.save()
-        work.save()
-        return redirect(reverse('show_ask',args=(id,)))
-    return render(request,'view_com.html',{'apps':apps,'work':work})
+            scores+=app.comment.score
+        if int(scores) == 10:
+            work.status=4
+            work.student.score+=5
+            work.student.save()
+            for app in apps:
+                app.teacher.score+=app.comment.score
+                app.teacher.save()
+            work.save()
+            return redirect(reverse('show_ask',args=(id,)))
+        else:
+            info='ERR'
+    return render(request,'view_com.html',{'apps':apps,'work':work,'info':info,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/',})
 def to_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
