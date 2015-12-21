@@ -25,13 +25,13 @@
 <video id="really-cool-video" class="video-js vjs-default-skin" controls 
   prload="metadata" width="320" height="240" 
  data-setup='{}'>
-  <source src="{{media_url}}{{work.video|cut:media_root}}" type='video/mp4'>
+  <source src="{{media_url}}{{work.video}}" type='video/mp4'>
   <p class="vjs-no-js">
     To view this video please enable JavaScript, and consider upgrading to a web browser
     that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
   </p>
 </video><br>
-<a href="{{media_url}}{{work.video|cut:media_root}}" data-ajax="false">点击下载</a>
+<a href="{{media_url}}{{work.video}}" data-ajax="false">点击下载</a>
 
 	<br>
    <hr>
@@ -39,22 +39,22 @@
    {% if work.audio %}
    <label>音频：</label><br>
    {% if work.getaudiosuffix == '.wav' %}
-   <audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
+   <audio src="{{media_url}}{{work.audio}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
 	{% elif work.getaudiosuffix == '.mp3' %}
-	<audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
+	<audio src="{{media_url}}{{work.audio}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
 	{% endif %}
 	<br>
-	<a href="{{media_url}}{{work.audio|cut:media_root}}" data-ajax="false">点击下载</a>
+	<a href="{{media_url}}{{work.audio}}" data-ajax="false">点击下载</a>
 	<br>
    <hr>
 	{% endif %}
 	{% if work.image %}
  	<label>截图:</label><br>
- 	<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
+ 	<img src="{{media_url}}{{work.image}}" alt="截图" height="300" width="300" />
 	<br>
     <hr>
  	{% endif %}
@@ -109,7 +109,7 @@
     <a href="{% url 'view_com' work.id %}" data-role="button" data-theme="b" data-ajax="false">查看解答</a>
     {% endif %}
     {% if work.status == 4 %}
-    <p>恭喜您已完成一条问题</p>
+    <p>恭喜您已完成一条问题,你获得10分奖励哦</p>
     {% endif %}
     <br>
     <a href="{% url 'my_ask' %}" data-role="button">返回</a>

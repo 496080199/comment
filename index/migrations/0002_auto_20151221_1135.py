@@ -7,12 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('index', '0017_work_addit'),
+        ('index', '0001_initial'),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='applicate',
-            name='student',
+        migrations.AlterField(
+            model_name='profile',
+            name='cert',
+            field=models.ImageField(null=True, upload_to=b'cert/%Y/%m/%d'),
         ),
     ]

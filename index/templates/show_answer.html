@@ -26,34 +26,34 @@
     		<video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
  data-setup='{}'>
-  <source src="{{media_url}}{{work.video|cut:media_root}}" type='video/mp4'>
+  <source src="{{media_url}}{{work.video}}" type='video/mp4'>
   <p class="vjs-no-js">
     To view this video please enable JavaScript, and consider upgrading to a web browser
     that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
   </p>
 </video>
-<a href="{{media_url}}{{work.video|cut:media_root}}" data-ajax="false">点击下载</a>
+<a href="{{media_url}}{{work.video}}" data-ajax="false">点击下载</a>
 <hr>
 {% endif %}
 {% if work.audio %}
 <label>音频:</label><br>
    {% if work.getaudiosuffix == '.wav' %}
-   <audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
+   <audio src="{{media_url}}{{work.audio}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
 	{% elif work.getaudiosuffix == '.mp3' %}
-	<audio src="{{media_url}}{{work.audio|cut:media_root}}" controls>
+	<audio src="{{media_url}}{{work.audio}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
 	{% endif %}
 	<br>
-	<a href="{{media_url}}{{work.audio|cut:media_root}}" data-ajax="false">点击下载</a>
+	<a href="{{media_url}}{{work.audio}}" data-ajax="false">点击下载</a>
 	<br>
    <hr>
 	{% endif %}
 	{% if work.image %}
  	<label>截图:</label><br>
- 	<img src="{{media_url}}{{work.image|cut:media_root}}" alt="截图" height="300" width="300" />
+ 	<img src="{{media_url}}{{work.image}}" alt="截图" height="300" width="300" />
  	<hr>
  	{% endif %}
  	{% if work.addit  %}
@@ -69,10 +69,10 @@
      		<a href="{% url 'edit_com' id %}" data-role="button" data-theme="b" data-ajax="false">修改解答</a>
      		<a href="{% url 'del_com' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-theme="a" data-ajax="false">删除解答</a>
      		{% elif n == 2 %}
-     		<p>您的评论已提交，请等待结果</p>
+     		<p>您的解答已提交，请等待结果</p>
      		{% endif %}
      	 {% elif applicate.work.status == 3 %}
-     	 <p>此问题所有评论已提交，等待学生评分</p>
+     	 <p>此问题所有解答已提交，等待学生评分</p>
      	 {% elif applicate.work.status == 4 %}
      	 <p>解答已结束，您的评分为{{applicate.comment.score}}分</p>
     	 {% else %}
@@ -94,6 +94,6 @@
     <br>
     <br>
     
-    <a href="{% url 'my_applicate' %}" data-role="button" >返回</a>
+    <a href="#" data-role="button" data-rel="back">返回</a>
     
 {% endblock %}

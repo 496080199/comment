@@ -10,8 +10,8 @@ import os
 class UserForm(ModelForm):
     
     type_list=(
-            ('student','学生'),
-            ('teacher','老师'),
+            (2,'学生'),
+            (1,'老师'),
             )
     sex_list=(
             ('男','男'),

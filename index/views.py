@@ -16,9 +16,9 @@ def index(request):
 
 def logined(r):
     if r.user.is_authenticated():
-        if Teacher.objects.filter(user_id=r.user.id):
+        if r.user.profile.type==1:
             return redirect(reverse('teacher_center'))
-        elif Student.objects.filter(user_id=r.user.id):
+        elif r.user.profile.type==2:
             return redirect(reverse('student_center'))
     return
 def register(request):
@@ -36,26 +36,18 @@ def register(request):
             user.email=form['email'].value()
             user.is_active=1
             user.save()
-            if form['type'].value()=='teacher':
-                teacher=Teacher(user=user)
-                teacher.sex=form['sex'].value()
-                teacher.birth=form['birth'].value()
-                teacher.province=form['province'].value()
-                teacher.city=form['city'].value()
-                teacher.area=form['area'].value()
-                teacher.address=form['address'].value()
-                teacher.phone=form['phone'].value()
-                teacher.save()
-            else:
-                student=Student(user=user)
-                student.sex=form['sex'].value()
-                student.birth=form['birth'].value()
-                student.province=form['province'].value()
-                student.city=form['city'].value()
-                student.area=form['area'].value()
-                student.address=form['address'].value()
-                student.phone=form['phone'].value() 
-                student.save()
+            profile=Profile(user=user)
+            profile.type=form['type'].value()
+            profile.sex=form['sex'].value()
+            profile.birth=form['birth'].value()
+            profile.province=form['province'].value()
+            profile.city=form['city'].value()
+            profile.area=form['area'].value()
+            profile.address=form['address'].value()
+            profile.phone=form['phone'].value()
+            profile.type=form['type'].value()
+            profile.save()
+            log(profile,"成功注册了账号")
             info='OK'
     else:
         form=UserForm()
@@ -76,10 +68,7 @@ def user_login(request):
             if user:
                 if user.is_active:
                     login(request, user)    
-                    if Teacher.objects.filter(user_id=user.id):
-                        return redirect(reverse('teacher_center'))
-                    elif Student.objects.filter(user_id=user.id):
-                        return redirect(reverse('student_center'))
+                    return logined(request)
             else:
                 error.append('请输入正确的用户名和密码')
     else:
@@ -94,11 +83,11 @@ def teacher_center(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     
-    return render(request,'teacher_center.html',{'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+    return render(request,'teacher_center.html',{'media_url':MEDIA_URL})
 def auth_teacher(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    teacher=request.user.teacher
+    teacher=request.user.profile
     if request.method=='POST':
         form=AuthForm(request.POST,request.FILES)
         if form.is_valid():
@@ -110,18 +99,18 @@ def auth_teacher(request):
             teacher.save()
             return redirect(reverse('user_login'))
     else:
-        form=AuthForm({'cert':teacher.cert,'othercert':teacher.othercert,'work':teacher.work})
-    return render(request,'auth_teacher.html',{'form':form,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+        form=AuthForm({'cert':teacher.cert,'othercert':teacher.othercert,'workshow':teacher.workshow})
+    return render(request,'auth_teacher.html',{'form':form,'media_url':MEDIA_URL,})
 def view_teacher(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    teacher=Teacher.objects.get(id=id)
+    teacher=Profile.objects.get(id=id)
     apps=teacher.applicate_set.filter(stat=1)
     coms=0
     for app in apps:
         if app.comment.status==2:
             coms+=1
-    return render(request,'view_teacher.html',{'teacher':teacher,'coms':coms,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+    return render(request,'view_teacher.html',{'teacher':teacher,'coms':coms,'media_url':MEDIA_URL})
 def change_img(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -129,12 +118,8 @@ def change_img(request):
     if request.method=='POST':
         form=ImgForm(request.POST,request.FILES)
         if form.is_valid():
-            if Teacher.objects.filter(user_id=user.id):
-                user.teacher.img=form['img'].value()
-                user.teacher.save()
-            if Student.objects.filter(user_id=user.id):
-                user.student.img=form['img'].value()
-                user.student.save()
+            user.profile.img=form['img'].value()
+            user.profile.save()
             return redirect(reverse('user_login'))
     else:
         form=ImgForm()
@@ -144,7 +129,7 @@ def student_center(request):
     
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    return render(request,'student_center.html',{'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/'})
+    return render(request,'student_center.html',{'media_url':MEDIA_URL})
 
 def change_password(request):
     
@@ -181,48 +166,33 @@ def change_info(request):
             user.first_name=form['first_name'].value()
             user.email=form['email'].value()
             user.save()
-            if Teacher.objects.filter(user_id=user.id):
-                user.teacher.sex=form['sex'].value()
-                user.teacher.birth=form['birth'].value()
-                user.teacher.province=form['province'].value()
-                user.teacher.city=form['city'].value()
-                user.teacher.area=form['area'].value()
-                user.teacher.address=form['address'].value()
-                user.teacher.phone=form['phone'].value()
-                user.teacher.save()
-            elif Student.objects.filter(user_id=user.id): 
-                user.student.sex=form['sex'].value()
-                user.student.birth=form['birth'].value()
-                user.student.province=form['province'].value()
-                user.student.city=form['city'].value()
-                user.student.area=form['area'].value()
-                user.student.address=form['address'].value()
-                user.student.phone=form['phone'].value()
-                user.student.save() 
+            user.profile.sex=form['sex'].value()
+            user.profile.birth=form['birth'].value()
+            user.profile.province=form['province'].value()
+            user.profile.city=form['city'].value()
+            user.profile.area=form['area'].value()
+            user.profile.address=form['address'].value()
+            user.profile.phone=form['phone'].value()
+            user.profile.save()
             info.setdefault('OK','修改成功')
         else:
             info.setdefault('ERR','修改失败')
     else:
-        if Teacher.objects.filter(user_id=user.id):
-            form=UserChangeInfoForm({'last_name':user.last_name,'first_name':user.first_name,'email':user.email,'sex':user.teacher.sex,'birth':user.teacher.birth,'province':user.teacher.province,'city':user.teacher.city,'area':user.teacher.area,'address':user.teacher.address,'phone':user.teacher.phone})
-        elif Student.objects.filter(user_id=user.id):
-            form=UserChangeInfoForm({'last_name':user.last_name,'first_name':user.first_name,'email':user.email,'sex':user.student.sex,'birth':user.student.birth,'province':user.student.province,'city':user.student.city,'area':user.student.area,'address':user.student.address,'phone':user.student.phone})
+        form=UserChangeInfoForm({'last_name':user.last_name,'first_name':user.first_name,'email':user.email,'sex':user.profile.sex,'birth':user.profile.birth,'province':user.profile.province,'city':user.profile.city,'area':user.profile.area,'address':user.profile.address,'phone':user.profile.phone})
     return render(request,'changeinfo.html',{'form':form,'info':info})
 def to_answer(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=Work.objects.filter(status=1).exclude(applicate__teacher=request.user.teacher).order_by('-time')
+    works=Work.objects.filter(status=1).exclude(applicate__teacher=request.user.profile).order_by('-time')
     #return HttpResponse(works)
     return render(request,'answer.html',{'works':works})
 def show_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    if request.user.teacher.auth!=1:
-        return redirect(reverse('auth_teacher'))
     work=Work.objects.get(id=id)
     applicate=None
     try:
-        applicate=request.user.teacher.applicate_set.get(work=work)
+        applicate=request.user.profile.applicate_set.get(work=work)
     except Exception:
         pass
     n=0
@@ -236,14 +206,16 @@ def show_answer(request,id):
         pass
         
     
-    return render(request,'show_answer.html',{'work':work,'id':id,'applicate':applicate,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n})
+    return render(request,'show_answer.html',{'work':work,'id':id,'applicate':applicate,'media_url':MEDIA_URL,'n':n})
 def app_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
+    if request.user.profile.auth!=1:
+        return redirect(reverse('auth_teacher'))
     work=Work.objects.get(id=id)
     app=Applicate()
     app.work=work
-    app.teacher=request.user.teacher
+    app.teacher=request.user.profile
     app.stat=0
     app.save()
     return redirect(reverse('my_applicate'))
@@ -251,25 +223,26 @@ def del_answer(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    app=request.user.teacher.applicate_set.filter(work=work)
+    app=request.user.profile.applicate_set.filter(work=work)
     app.delete()
     return redirect(reverse('my_applicate'))
 def my_applicate(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    apps=request.user.teacher.applicate_set.all().order_by('-time')
+    apps=request.user.profile.applicate_set.all().order_by('-time')
     return render(request,'my_applicate.html',{'apps':apps}) 
 def to_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    app=request.user.teacher.applicate_set.get(work=work)
+    app=request.user.profile.applicate_set.get(work=work)
     if request.method=='POST':
         form=CommentForm(request.POST,request.FILES)
         if form.is_valid():
             com=Comment()
             com.work=work
             com.applicate=app
+            com.teacher=request.user.profile
             com.content=form['content'].value()
             com.video=form['video'].value()
             com.audio=form['audio'].value()
@@ -285,7 +258,7 @@ def edit_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    app=request.user.teacher.applicate_set.get(work=work)
+    app=request.user.profile.applicate_set.get(work=work)
     com=app.comment
     if request.method=='POST':
         form=CommentForm(request.POST,request.FILES)
@@ -326,7 +299,7 @@ def del_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    app=request.user.teacher.applicate_set.get(work=work)
+    app=request.user.profile.applicate_set.get(work=work)
     com=app.comment
     if com.video:
         os.remove(com.video.name)
@@ -340,7 +313,7 @@ def submit_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    applicate=request.user.teacher.applicate_set.get(work=work)
+    applicate=request.user.profile.applicate_set.get(work=work)
     com=applicate.comment
     com.status=2
     com.save()
@@ -358,7 +331,7 @@ def view_com(request,id):
     info=''
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    work=Work.objects.get(id=id)
+    work=request.user.profile.work_set.get(id=id)
     apps=work.applicate_set.filter(stat=1)
     if request.method=='POST':
         scores=0
@@ -366,7 +339,7 @@ def view_com(request,id):
             scores+=app.comment.score
         if int(scores) == 10:
             work.status=4
-            work.student.score+=5
+            work.student.score+=10
             work.student.save()
             for app in apps:
                 app.teacher.score+=app.comment.score
@@ -375,7 +348,7 @@ def view_com(request,id):
             return redirect(reverse('show_ask',args=(id,)))
         else:
             info='ERR'
-    return render(request,'view_com.html',{'apps':apps,'work':work,'info':info,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/',})
+    return render(request,'view_com.html',{'apps':apps,'work':work,'info':info,'media_url':MEDIA_URL,})
 def to_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -383,7 +356,7 @@ def to_ask(request):
         
         form=WorkForm(request.POST,request.FILES)
         if form.is_valid():
-            work=Work(student=request.user.student)
+            work=Work(student=request.user.profile)
             work.name=form['name'].value()
             work.desc=form['desc'].value()
             work.content=form['content'].value()
@@ -397,7 +370,7 @@ def to_ask(request):
 def my_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=request.user.student.work_set.filter(status__gt=0).order_by('-time')
+    works=request.user.profile.work_set.filter(status__gt=0).order_by('-time')
     return render(request,'my_ask.html',{'works':works})
 def show_ask(request,id):
     if not request.user.is_authenticated():
@@ -420,7 +393,7 @@ def show_ask(request,id):
                 except Exception:
                     pass
     com_count=count-m
-    return render(request,'show_ask.html',{'work':work,'media_url':MEDIA_URL,'media_root':MEDIA_ROOT+'/','n':n,'count':count,'m':m,'com_count':com_count})
+    return render(request,'show_ask.html',{'work':work,'media_url':MEDIA_URL,'n':n,'count':count,'m':m,'com_count':com_count})
 def manage_app(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -446,38 +419,38 @@ def edit_ask(request,id):
     work=Work.objects.get(id=id)
     if request.method=='POST':
         form=WorkForm(request.POST,request.FILES)
-        #if form.is_valid():
-        work.name=form['name'].value()
-        work.desc=form['desc'].value()
-        work.content=form['content'].value()
-        video=form['video'].value()
-        if video:
-            if work.video:
-                os.remove(work.video.name)
-            work.video=video
-        elif video==False:
-            if work.video:
-                os.remove(work.video.name)
-            work.video=None
-        audio=form['audio'].value()
-        if audio:
-            if work.audio:
-                os.remove(work.audio.name)
-            work.audio=audio
-        elif audio==False:
-            if work.audio:
-                os.remove(work.audio.name)
-            work.audio=None
-        image=form['image'].value()
-        if image:
-            if work.image:
-                os.remove(work.image.name)
-            work.image=image
-        elif image==False:
-            if work.image:
-                os.remove(work.image.name)
-            work.image=None
-        work.save()
+        if form.is_valid():
+            work.name=form['name'].value()
+            work.desc=form['desc'].value()
+            work.content=form['content'].value()
+            video=form['video'].value()
+            if video:
+                if work.video:
+                    os.remove(work.video.name)
+                work.video=video
+            elif video==False:
+                if work.video:
+                    os.remove(work.video.name)
+                work.video=None
+            audio=form['audio'].value()
+            if audio:
+                if work.audio:
+                    os.remove(work.audio.name)
+                work.audio=audio
+            elif audio==False:
+                if work.audio:
+                    os.remove(work.audio.name)
+                work.audio=None
+            image=form['image'].value()
+            if image:
+                if work.image:
+                    os.remove(work.image.name)
+                work.image=image
+            elif image==False:
+                if work.image:
+                    os.remove(work.image.name)
+                work.image=None
+            work.save()
             
     else:
         form=WorkForm(instance=work)
@@ -494,7 +467,12 @@ def addit_ask(request,id):
 def del_ask(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    Work.objects.filter(id=id).update(status=0)
+    work=Work.objects.get(id=id)
+    work.status=0
+    work.save(update_fields=['status'])
+    apps=work.applicate_set.all()
+    for app in apps:
+        app.delete()
     return redirect(reverse('my_ask'))
 def change_app_stat(request,id,val):
     if not request.user.is_authenticated():
@@ -517,5 +495,12 @@ def change_com_score(request,id,val):
             com.save(update_fields=['score'])
             return HttpResponse('OK')
     return HttpResponse('ERR')
+
+def log(profile,action):
+    log=Log()
+    log.profile=profile
+    log.content=str(action)
+    log.save()
+    return 'OK'
     
     

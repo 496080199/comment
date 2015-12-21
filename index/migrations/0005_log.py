@@ -7,19 +7,16 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('index', '0001_initial'),
+        ('index', '0004_profile_auth_result'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Applicate',
+            name='Log',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('content', models.CharField(max_length=500)),
-                ('ispass', models.BooleanField()),
-                ('student', models.ForeignKey(to='index.Student')),
-                ('teacher', models.ForeignKey(to='index.Teacher')),
-                ('work', models.ForeignKey(to='index.Work')),
+                ('content', models.TextField()),
+                ('profile', models.ForeignKey(to='index.Profile')),
             ],
         ),
     ]

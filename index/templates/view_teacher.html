@@ -8,11 +8,11 @@
     <label>分数:</label>{{teacher.score}}
     <hr>
     <label>教师资格证:</label><br>
-    <img src="{{media_url}}{{teacher.cert|cut:media_root}}" alt="教师资格证" height="300" width="300"/>
+    <img src="{{media_url}}{{teacher.cert}}" alt="教师资格证" height="300" width="300"/>
     <hr>
     {% if teacher.othercert %}
     	<label>其他资格证(选填):</label><br>
-    	<img src="{{media_url}}{{teacher.othercert|cut:media_root}}" alt="其他资格证" height="300" width="300"/>
+    	<img src="{{media_url}}{{teacher.othercert}}" alt="其他资格证" height="300" width="300"/>
     	<hr>
     {% endif %}
     {% if teacher.work %}
@@ -21,22 +21,22 @@
     	<video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
  data-setup='{}'>
-  		<source src="{{media_url}}{{teacher.work|cut:media_root}}" type='video/mp4'>
+  		<source src="{{media_url}}{{teacher.work}}" type='video/mp4'>
   		<p class="vjs-no-js">
     	To view this video please enable JavaScript, and consider upgrading to a web browser
     	that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
   		</p>
 		</video>
 		{% elif teacher.getworksuffix == '.mp3' %}
-			<audio src="{{media_url}}{{teacher.work|cut:media_root}}" controls>
+			<audio src="{{media_url}}{{teacher.work}}" controls>
 			您的浏览器不支持 audio 标签。
 			</audio>
 		{% elif teacher.getworksuffix == '.wav' %}
-			<audio src="{{media_url}}{{teacher.work|cut:media_root}}" controls>
+			<audio src="{{media_url}}{{teacher.work}}" controls>
 			您的浏览器不支持 audio 标签。
 			</audio>
 		{% endif %}
-		<a href="{{media_url}}{{teacher.work|cut:media_root}}" data-ajax="false">点击下载</a>
+		<a href="{{media_url}}{{teacher.work}}" data-ajax="false">点击下载</a>
     	<hr>
     {% endif %}
     <a href="#" data-role="button" data-rel="back">返回</a>

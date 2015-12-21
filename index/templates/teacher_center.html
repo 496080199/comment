@@ -2,17 +2,17 @@
 {% block content %}
 <h2 style="text-align:center;">教师个人中心</h2>
 <hr />
-<div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false"><img src="{{media_url}}{{user.teacher.img|cut:media_root}}" alt="头像" height="100" width="100" /></a></div>
+<div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false"><img src="{{media_url}}{{user.profile.img}}" alt="头像" height="100" width="100" /></a></div>
 <div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false">修改头像</a></div>
 <br>
 <div style="text-align:center;">尊敬的{{user.last_name}}老师，您好！欢迎来到教师个人中心。</div>
-<div style="text-align:center;">您当前分数：{{user.teacher.score}}分</div>
+<div style="text-align:center;">您当前分数：{{user.profile.score}}分</div>
 <br>
 <div>
 <ul data-role="listview">
       <li><a href="{% url 'change_password' %}" data-ajax="false">修改密码</a></li>
       <li><a href="{% url 'change_info' %}" data-ajax="false">修改个人资料</a></li>
-      <li><a href="{% url 'auth_teacher' %}" data-ajax="false">教师认证({% if user.teacher.auth == 1 %}已认证{% elif user.teacher.auth == 2 %}认证失败{% else %}待认证{% endif %})</a></li>
+      <li><a href="{% url 'auth_teacher' %}" data-ajax="false">教师认证({% if user.profile.auth == 1 %}<label style="color:green">已认证</label>{% elif user.profile.auth == 2 %}<label style="color:red">认证失败</label>{% else %}<label style="color:red">待认证</label>{% endif %})</a></li>
       <li><a href="{% url 'to_answer' %}" data-ajax="false">去申请解答</a></li>
       <li><a href="{% url 'my_applicate' %}">我的问题解答</a></li>
     </ul>

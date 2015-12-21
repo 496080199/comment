@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'comment',
-        'HOST': '192.168.10.103',
+        'HOST': '192.168.1.97',
         'PORT': '3306',
         'USER': 'comment',
         'PASSWORD': 'comment',

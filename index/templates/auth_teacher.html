@@ -5,8 +5,8 @@
 {% endblock %}
 {% block content %}
     <h3>教师认证</h3>
-    {% if user.teacher.auth == 0 %}
-    {% if user.teacher.cert %}
+    {% if user.profile.auth == 0 %}
+    {% if user.profile.cert %}
     	已提交申请材料，正在等待审核
     <a href="{% url 'user_login' %}" data-role="button">返回</a>
     {% else %}
@@ -20,44 +20,47 @@
     <a href="{% url 'user_login' %}" data-role="button">返回</a>
     </form>
     {% endif %}
-    {% elif user.teacher.auth == 1 %}
+    {% elif user.profile.auth == 1 %}
     <label>您的名字:</label>{{user.last_name}}{{user.first_name}}
     <hr>
     <label>教师资格证:</label><br>
-    <img src="{{media_url}}{{user.teacher.cert|cut:media_root}}" alt="教师资格证" height="300" width="300"/>
+    <img src="{{media_url}}{{user.profile.cert}}" alt="教师资格证" height="300" width="300"/>
     <hr>
-    {% if user.teacher.othercert %}
+    {% if user.profile.othercert %}
     <label>其他资格证(选填):</label><br>
-    <img src="{{media_url}}{{user.teacher.cert|cut:media_root}}" alt="其他资格证" height="300" width="300"/>
+    <img src="{{media_url}}{{user.profile.cert}}" alt="其他资格证" height="300" width="300"/>
     <hr>
     {% endif %}
-    {% if user.teacher.work %}
+    {% if user.profile.workshow %}
     <label>作品(选填):</label><br>
-    {% if user.teacher.getworksuffix == '.mp4' %}
+    {% if user.profile.getworksuffix == '.mp4' %}
     <video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
  data-setup='{}'>
-  <source src="{{media_url}}{{user.teacher.work|cut:media_root}}" type='video/mp4'>
+  <source src="{{media_url}}{{user.profile.workshow}}" type='video/mp4'>
   <p class="vjs-no-js">
     To view this video please enable JavaScript, and consider upgrading to a web browser
     that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
   </p>
 </video>
-{% elif user.teacher.getworksuffix == '.mp3' %}
-<audio src="{{media_url}}{{user.teacher.work|cut:media_root}}" controls>
+{% elif user.profile.getworksuffix == '.mp3' %}
+<audio src="{{media_url}}{{user.profile.workshow}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
-{% elif user.teacher.getworksuffix == '.wav' %}
-<audio src="{{media_url}}{{user.teacher.work|cut:media_root}}" controls>
+{% elif user.profile.getworksuffix == '.wav' %}
+<audio src="{{media_url}}{{user.profile.workshow}}" controls>
 	您的浏览器不支持 audio 标签。
 	</audio>
 	{% endif %}
-<a href="{{media_url}}{{user.teacher.work|cut:media_root}}" data-ajax="false">点击下载</a>
+<a href="{{media_url}}{{user.profile.workshow}}" data-ajax="false">点击下载</a>
     <hr>
     {% endif %}
     <a href="{% url 'user_login' %}" data-role="button">返回</a>
-    {% elif user.teacher.auth == 2 %}
-   		您的审核未通过，请重新提交材料<br><br>
+    {% elif user.profile.auth == 2 %}
+   		您的审核未通过，请重新提交材料.<br>
+   		原因为：<p style="color:red">{{user.profile.auth_result}}</p>
+   		<br>
+   		<br>
    	<form method="post" enctype="multipart/form-data" action="{% url 'auth_teacher' %}" data-ajax="false">{% csrf_token %}
     <label>您的名字:</label>{{user.last_name}}{{user.first_name}}
     <br><br>
