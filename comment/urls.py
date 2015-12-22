@@ -20,12 +20,16 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^$','index.views.index',name='index'),
+    url(r'^more_ask$','index.views.more_ask',name='more_ask'),
+    url(r'^more_log$','index.views.more_log',name='more_log'),
     url(r'^register$','index.views.register',name='register'),
     url(r'^user_login$','index.views.user_login',name='user_login'),
     url(r'^user_logout$','index.views.user_logout',name='user_logout'),
     url(r'^teacher_center$','index.views.teacher_center',name='teacher_center'),
     url(r'^auth_teacher$','index.views.auth_teacher',name='auth_teacher'),
+    url(r'^view_message$','index.views.view_message',name='view_message'),
     url(r'^view_teacher/([0-9]+)$','index.views.view_teacher',name='view_teacher'),
+    url(r'^view_student/([0-9]+)$','index.views.view_student',name='view_student'),
     url(r'^student_center$','index.views.student_center',name='student_center'),
     url(r'^change_password$','index.views.change_password',name='change_password'),
     url(r'^change_info$','index.views.change_info',name='change_info'),

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>动态列表：<h3>
+    <ul data-role="listview" data-filter="true">
+    {% for log in log_list %}
+    <li>
+   
+    {% if log.profile.type == 1 %}
+    <a href="{% url 'view_teacher' log.profile.id %}" data-ajax="false">{{log.profile.user.last_name}}老师{{log.content}}</a>
+    {% elif log.profile.type == 2 %}
+    <a href="{% url 'view_student' log.profile.id %}" data-ajax="false">{{log.profile.user.last_name}}同学{{log.content}}</a>
+    {% endif %}
+    </li>
+    
+    {% endfor %}
+	</ul>
+    <div>
+    <br><br>
+				
+						<div style="text-align:center;"><label>第{{log_list.number}}页 总共{{log_list.paginator.num_pages}}页</label><div>
+				{% if log_list.has_previous %}
+						<a type="button" data-theme="b" data-icon="arrow-l" href="?page={{log_list.previous_page_number}}">上一页</a>
+				{% endif %}
+				{% if log_list.has_next %}
+						<a type="button" data-theme="b" data-icon="arrow-r" href="?page={{log_list.next_page_number}}">下一页</a>
+				{% endif %}
+			</div>
+
+    
+    
+    
+    
+    <a href="{% url 'index' %}" data-role="button">返回</a>
+{% endblock %}

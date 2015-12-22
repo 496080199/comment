@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>消息列表：<h3>
+    <ol data-role="listview" data-filter="true">
+    {% for message in messages %}
+   
+    <li>
+    {% if message.profile.type == 1 %}
+    {{message.profile.user.last_name}}老师{{message.content}}&nbsp;&nbsp;时间：{{message.time|date:"Y-m-d H:i:s"}}
+    {% elif message.profile.type == 2 %}
+    {{message.profile.user.last_name}}同学{{message.content}}&nbsp;&nbsp;时间：{{message.time|date:"Y-m-d H:i:s"}}
+    {% endif %}
+    </li>
+    
+    
+    {% endfor %}
+
+    
+
+    
+    
+    
+    
+    <a href="{% url 'user_login' %}" data-role="button">返回</a>
+{% endblock %}

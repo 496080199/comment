@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <h3>问题列表：<h3>
-    <ol data-role="listview">
+    <ol data-role="listview" data-filter="true">
     {% for work in works %}
    
     <li><a href="{% url 'show_answer' work.id %}" data-ajax="false">{{work.name}}</a></li>

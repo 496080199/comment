@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>{{student.user.last_name}}同学的信息</h3>
+    <label>姓名:</label>{{student.user.last_name}}{{student.user.first_name}}
+    <hr>
+    <label>提问数:</label>{{asks}}次
+    <hr>
+    <label>分数:</label>{{student.score}}
+    <hr>
+    <a href="#" data-role="button" data-rel="back">返回</a>
+    
+    
+{% endblock %}

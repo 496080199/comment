@@ -8,11 +8,40 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.hashers import make_password
 from comment.settings import MEDIA_URL
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 # Create your views here.
 def index(request):
+    logs=Log.objects.all().order_by('-time')[:3]
+    works=Work.objects.filter(status=1).order_by('-time')[:3]
     
-    return render(request,'index.html')
+    return render(request,'index.html',{'logs':logs,'works':works})
+def more_ask(request):
+    works=Work.objects.filter(status=1).order_by('-time')
+    page_size=15
+    paginator=Paginator(works,page_size)
+    try:
+        page=int(request.GET.get('page','1'))
+    except ValueError:
+       page=1
+    try:
+        work_list=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        work_list=paginator.page(paginator.num_pages)
+    return render(request,'more_ask.html',{'work_list':work_list})
+def more_log(request):
+    logs=Log.objects.all().order_by('-time')
+    page_size=15
+    paginator=Paginator(logs,page_size)
+    try:
+        page=int(request.GET.get('page','1'))
+    except ValueError:
+        page=1
+    try:
+        log_list=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        log_list=paginator.page(paginator.num_pages)
+    return render(request,'more_log.html',{'log_list':log_list})
 
 def logined(r):
     if r.user.is_authenticated():
@@ -67,7 +96,8 @@ def user_login(request):
             #user=User.objects.get(username__exact=username,password__exact=password)
             if user:
                 if user.is_active:
-                    login(request, user)    
+                    login(request, user)
+                    log(request.user.profile,"登陆了系统")    
                     return logined(request)
             else:
                 error.append('请输入正确的用户名和密码')
@@ -77,6 +107,7 @@ def user_login(request):
     
     return render(request,'userlogin.html',{'form':form,'error':error,})
 def user_logout(request):
+    log(request.user.profile,"退出了系统") 
     logout(request)
     return redirect(reverse('user_login'))
 def teacher_center(request):
@@ -105,12 +136,14 @@ def view_teacher(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     teacher=Profile.objects.get(id=id)
-    apps=teacher.applicate_set.filter(stat=1)
-    coms=0
-    for app in apps:
-        if app.comment.status==2:
-            coms+=1
+    coms=teacher.comment_set.filter(status=2).count()
     return render(request,'view_teacher.html',{'teacher':teacher,'coms':coms,'media_url':MEDIA_URL})
+def view_student(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    student=Profile.objects.get(id=id)
+    asks=student.work_set.filter(status=4).count()
+    return render(request,'view_student.html',{'student':student,'asks':asks,'media_url':MEDIA_URL})
 def change_img(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -218,6 +251,7 @@ def app_answer(request,id):
     app.teacher=request.user.profile
     app.stat=0
     app.save()
+    message(request.user.profile,"发起了解答申请,问题是："+str(work.name),work.student.id)
     return redirect(reverse('my_applicate'))
 def del_answer(request,id):
     if not request.user.is_authenticated():
@@ -225,6 +259,7 @@ def del_answer(request,id):
     work=Work.objects.get(id=id)
     app=request.user.profile.applicate_set.filter(work=work)
     app.delete()
+    log(request.user.profile,"删除了一个答疑")
     return redirect(reverse('my_applicate'))
 def my_applicate(request):
     if not request.user.is_authenticated():
@@ -249,6 +284,7 @@ def to_com(request,id):
             com.image=form['image'].value()
             com.status=1
             com.save()
+            
             
     else:
         form=CommentForm()
@@ -326,6 +362,7 @@ def submit_com(request,id):
             return redirect(reverse('show_answer',args=(id,))) 
     work.status=3
     work.save()
+    message(request.user.profile,"提交了解答,解答的问题是："+str(work.name),work.student.id)
     return redirect(reverse('show_answer',args=(id,))) 
 def view_com(request,id):
     info=''
@@ -344,6 +381,7 @@ def view_com(request,id):
             for app in apps:
                 app.teacher.score+=app.comment.score
                 app.teacher.save()
+                message(request.user.profile,"给您评了"+str(app.comment.score)+"分，问题是："+str(app.work.name),app.teacher.id)
             work.save()
             return redirect(reverse('show_ask',args=(id,)))
         else:
@@ -364,6 +402,7 @@ def to_ask(request):
             work.audio=form['audio'].value()
             work.image=form['image'].value()
             work.save()   
+            log(request.user.profile,"发布了一个问题")
     else:
         form=WorkForm()
     return render(request,'to_ask.html',{'form':form})
@@ -407,6 +446,8 @@ def manage_app(request,id):
         if count <= 3 and count > 0 :
             work.status=2
             work.save()
+            for app in work.applicate_set.filter(stat=1):
+                message(request.user.profile,"同意了您的申请，问题是："+str(work.name),app.teacher.id)
             
             return redirect(reverse('show_ask',args=(id,)))
         info='ERR'
@@ -462,6 +503,8 @@ def addit_ask(request,id):
     if request.method=='POST':
         work.addit=request.POST['addit']
         work.save()
+        for app in work.applicate_set.filter(stat=1):
+            message(request.user.profile,"补充了说明，问题是："+str(work.name),app.teacher.id)
     return redirect(reverse('show_ask',args=(id,)))
         
 def del_ask(request,id):
@@ -473,6 +516,7 @@ def del_ask(request,id):
     apps=work.applicate_set.all()
     for app in apps:
         app.delete()
+    log(request.user.profile,"删了一个问题")
     return redirect(reverse('my_ask'))
 def change_app_stat(request,id,val):
     if not request.user.is_authenticated():
@@ -502,5 +546,16 @@ def log(profile,action):
     log.content=str(action)
     log.save()
     return 'OK'
+def message(profile,action,id):
+    message=Message()
+    message.profile=profile
+    message.content=str(action)
+    message.obj=id
+    message.save()
+    return 'OK'
+def view_message(request):
+    messages=Message.objects.filter(obj=request.user.profile.id).order_by('-time')
+    return render(request,'view_message.html',{'messages':messages})
+    
     
     

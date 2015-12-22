@@ -5,11 +5,12 @@
 <div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false"><img src="{{media_url}}{{user.profile.img}}" alt="头像" height="100" width="100" /></a></div>
 <div style="text-align:center;"><a href="{% url 'change_img' %}" data-ajax="false">修改头像</a></div>
 <br>
-<div style="text-align:center;">{{user.last_name}}同学，您好！欢迎来到学生个人中心。</div>
+<div style="text-align:center;">{{user.last_name}}同学，您好！欢迎回到个人中心。</div>
 <div style="text-align:center;">您当前分数：{{user.profile.score}}分</div>
 <br>
 <div>
 <ul data-role="listview">
+	  <li><a href="{% url 'view_message' %}" data-ajax="false">查看消息</a></li>
       <li><a href="{% url 'change_password' %}" data-ajax="false">修改密码</a></li>
       <li><a href="{% url 'change_info' %}" data-ajax="false">修改个人资料</a></li>
       <li><a href="{% url 'to_ask' %}" data-ajax="false">发布问题</a></li>

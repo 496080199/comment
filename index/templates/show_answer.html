@@ -11,6 +11,8 @@
     {{work.desc}}
     <hr>
     {% endif %}
+
+    {% if user.profile.type == 1 %}
     {% if applicate.stat == 1 %}
     	{% if applicate.work.status == 2 %}
     	{% if work.content %}
@@ -81,16 +83,22 @@
     
     {% elif applicate.stat == 0 %}
     {% if applicate.work.status == 2 or applicate.work.status == 1%}
+        <br>
+    <br>
      
     <p>正在申请答疑中</p>
     <a href="{% url 'del_answer' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">取消申请</a>
     {% else %}
+        <br>
+    <br>
     您未被同意回答此问题，请去回答其他问题吧
     {% endif %}
     {% else %}
+        <br>
+    <br>
     <a href="{% url 'app_answer' id %}" data-role="button" data-theme="b" data-ajax="false">申请答疑</a>
     {% endif %}
-    
+    {% endif %}
     <br>
     <br>
     

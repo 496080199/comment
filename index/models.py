@@ -65,6 +65,11 @@ class Log(models.Model):
     content=models.TextField()
     time=models.DateTimeField(auto_now=True)
     profile=models.ForeignKey(Profile)
+class Message(models.Model):
+    content=models.TextField()
+    time=models.DateTimeField(auto_now=True)
+    obj=models.IntegerField()
+    profile=models.ForeignKey(Profile)
 
 
 
