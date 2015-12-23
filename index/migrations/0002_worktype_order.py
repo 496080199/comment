@@ -7,14 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('index', '0003_auto_20151221_1139'),
+        ('index', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='auth_result',
-            field=models.CharField(default=None, max_length=200),
-            preserve_default=False,
+            model_name='worktype',
+            name='order',
+            field=models.IntegerField(default=0),
         ),
     ]

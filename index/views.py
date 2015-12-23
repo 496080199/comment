@@ -12,10 +12,25 @@ from django.core.paginator import Paginator, EmptyPage, InvalidPage
 
 # Create your views here.
 def index(request):
+    types=WorkType.objects.all().order_by('order')[:6]
     logs=Log.objects.all().order_by('-time')[:3]
     works=Work.objects.filter(status=1).order_by('-time')[:3]
+    #return HttpResponse(types[0])
     
-    return render(request,'index.html',{'logs':logs,'works':works})
+    return render(request,'index.html',{'logs':logs,'works':works,'types':types})
+def more_type(request):
+    types=WorkType.objects.all().order_by('order')
+    page_size=15
+    paginator=Paginator(types,page_size)
+    try:
+        page=int(request.GET.get('page','1'))
+    except ValueError:
+       page=1
+    try:
+        type_list=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        type_list=paginator.page(paginator.num_pages)
+    return render(request,'more_type.html',{'type_list':type_list})
 def more_ask(request):
     works=Work.objects.filter(status=1).order_by('-time')
     page_size=15
@@ -43,6 +58,21 @@ def more_log(request):
         log_list=paginator.page(paginator.num_pages)
     return render(request,'more_log.html',{'log_list':log_list})
 
+def view_worktype(request,id):
+    worktype=WorkType.objects.get(id=id)
+    works=worktype.work_set.filter(status=1).order_by('-time')
+    page_size=15
+    paginator=Paginator(works,page_size)
+    try:
+        page=int(request.GET.get('page','1'))
+    except ValueError:
+        page=1
+    try:
+        work_list=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        work_list=paginator.page(paginator.num_pages)
+    
+    return render(request,'view_worktype.html',{'work_list':work_list,'worktype':worktype})
 def logined(r):
     if r.user.is_authenticated():
         if r.user.profile.type==1:
@@ -396,6 +426,7 @@ def to_ask(request):
         if form.is_valid():
             work=Work(student=request.user.profile)
             work.name=form['name'].value()
+            work.worktype_id=int(form['worktype'].value())
             work.desc=form['desc'].value()
             work.content=form['content'].value()
             work.video=form['video'].value()
@@ -518,23 +549,25 @@ def del_ask(request,id):
         app.delete()
     log(request.user.profile,"删了一个问题")
     return redirect(reverse('my_ask'))
-def change_app_stat(request,id,val):
+def change_app_stat(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     app=Applicate.objects.get(id=id)
     if app.work.status==1:
-        if request.is_ajax():
+        if request.method=='POST':
+            val=request.POST['stat']
             app.stat=int(val)
             app.save(update_fields=['stat'])
             return HttpResponse('OK')
     return HttpResponse('ERR')
     
-def change_com_score(request,id,val):
+def change_com_score(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     com=Comment.objects.get(id=id)
     if com.applicate.work.status==3:
-        if request.is_ajax():
+        if request.method=='POST':
+            val=request.POST['score']
             com.score=int(val)
             com.save(update_fields=['score'])
             return HttpResponse('OK')

@@ -6,12 +6,14 @@
 {% block content %}
     <label>标题:</label>{{work.name}}
 	<hr size="4"  />
+	<label>类型:</label><br>
+	{{work.worktype}}
+	<hr>
 	{% if work.desc %}
     <label>简述:</label><br>
     {{work.desc}}
     <hr>
     {% endif %}
-
     {% if user.profile.type == 1 %}
     {% if applicate.stat == 1 %}
     	{% if applicate.work.status == 2 %}

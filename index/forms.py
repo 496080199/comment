@@ -103,7 +103,7 @@ class WorkForm(ModelForm):
     image=forms.ImageField(required=False)
     class Meta:
         model=Work
-        fields='name','desc','content','video','audio','image',
+        fields='name','worktype','desc','content','video','audio','image',
         
 class CommentForm(ModelForm):
     video=forms.FileField(required=False)

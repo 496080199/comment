@@ -1,15 +1,14 @@
 function changeStat(id){
 	var val=$("#stat").val();
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET","/change_app_stat/"+id+"/"+val,true);
-	xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-	xhr.send();
+	$.post("/change_app_stat/"+id,{'stat':val},function(ret){
+	});
 };
 
 function changeScore(id){
 	var val=$("#score").val();
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET","/change_com_score/"+id+"/"+val,true);
-	xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-	xhr.send();
+	$.post("/change_com_score/"+id,{'score':val},function(ret){
+	});
 };
+
+
+		 

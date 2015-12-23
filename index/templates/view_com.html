@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block head %}
 <script type="text/javascript" src="{{STATIC_URL}}js/changedata.js"></script>
+<script>
+$.ajaxSetup({
+    data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+</script>
 {% endblock %}
 {% block content %}
     <h3>评论列表：<h3>

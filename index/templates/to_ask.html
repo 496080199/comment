@@ -16,7 +16,8 @@
 <form id="form" method="post" enctype="multipart/form-data"  action="javascript: uploadFile()">{% csrf_token %}
 
 <div style="text-align:center;">提交问题</div>
-	<label>名称:</label>{{form.name}}{{form.name.errors}}   
+	<label>名称:</label>{{form.name}}{{form.name.errors}} 
+	 <label>类型:</label>{{form.worktype}}{{form.worktype.errors}}  
 	<label>简述(选填）:</label>{{form.desc}}{{form.desc.errors}}  
 	<label>详细内容:</label>{{form.content}}{{form.content.errors}}
 	<label>视频（可选）:</label><input type="file" name="video" id="id_video"  onchange="videoSelected();" />{{form.video.errors}}  

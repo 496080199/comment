@@ -20,6 +20,8 @@ from django.conf import settings
 
 urlpatterns = [
     url(r'^$','index.views.index',name='index'),
+    url(r'^more_type$','index.views.more_type',name='more_type'),
+    url(r'^view_worktype/([0-9]+)$','index.views.view_worktype',name='view_worktype'),
     url(r'^more_ask$','index.views.more_ask',name='more_ask'),
     url(r'^more_log$','index.views.more_log',name='more_log'),
     url(r'^register$','index.views.register',name='register'),
@@ -51,7 +53,7 @@ urlpatterns = [
     url(r'^del_com/([0-9]+)$','index.views.del_com',name='del_com'),
     url(r'^submit_com/([0-9]+)$','index.views.submit_com',name='submit_com'),
     url(r'^view_com/([0-9]+)$','index.views.view_com',name='view_com'),
-    url(r'^change_app_stat/([0-9]+)/([0-9]+)$','index.views.change_app_stat',name='change_app_stat'),
-    url(r'^change_com_score/([0-9]+)/([0-9]+)$','index.views.change_com_score',name='change_com_score'),
+    url(r'^change_app_stat/([0-9]+)$','index.views.change_app_stat',name='change_app_stat'),
+    url(r'^change_com_score/([0-9]+)$','index.views.change_com_score',name='change_com_score'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 

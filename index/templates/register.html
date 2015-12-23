@@ -43,6 +43,6 @@ alert("提交成功")
 	<br>
 	<br>
 	<button type="submit" data-theme="b" onclick="return validate();">提交</button>
-	<a href="{% url 'index' %}" data-role="button">返回</a>
+	<a href="{% url 'index' %}" data-role="button" data-ajax="false">返回</a>
 </form>
 {% endblock %}

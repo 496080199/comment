@@ -6,6 +6,9 @@
 {% block content %}
     <label>标题:</label><b>{{work.name}}</b>
     <hr size="4"  />
+    <label>类型:</label><br>
+	{{work.worktype}}
+	<hr>
     {% if work.desc %}
     <label>简述:</label><br>
     {{work.desc}}

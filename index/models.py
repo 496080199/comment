@@ -23,8 +23,16 @@ class Profile(models.Model):
     def getworksuffix(self):
         file_name_suffix=os.path.splitext(self.work.name)[1].lower()
         return file_name_suffix
+class WorkType(models.Model):
+    name=models.CharField(max_length=100)
+    order=models.IntegerField(default=0)
+    def __unicode__(self):
+        return self.name
+    class Meta:
+        ordering = ['order']
 class Work(models.Model):
     name=models.CharField(max_length=100)
+    worktype=models.ForeignKey(WorkType)
     desc=models.CharField(max_length=100)
     content=models.TextField()
     video=models.FileField(upload_to='work/%Y/%m/%d',null=True,blank=True)
