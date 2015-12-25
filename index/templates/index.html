@@ -1,31 +1,79 @@
 {% extends 'base.html' %}
 {% block head %}
+<link href="{{STATIC_URL}}css/nivo-slider.css" rel="stylesheet">
+<script src="//cdn.bootcss.com/jquery-nivoslider/3.2/jquery.nivo.slider.pack.js"></script>
+<script type="text/javascript">
+$(window).load(function() {
+    $('#slider').nivoSlider({
+        slices:15,
+        boxCols:8,
+        boxRows:4,
+        animSpeed:500,
+        pauseTime:3000,
+        startSlide:0,
+        directionNav:true,
+        controlNav:true,
+        controlNavThumbs:false,
+        pauseOnHover:true,
+        manualAdvance:false,
+    prevText: '<',            
+    nextText: '>', 
+    });
+    
+});
+</script>
 <style>
 .ui-block-a, 
-.ui-block-b, 
+.ui-block-b
+{
+}
 .ui-block-c 
 {
-background-color: #fd9502;
-border: 1px solid #72c1ff;
-height: 100px;
+border: 1px solid lightgrey;
+height: 120px;
 font-weight: bold;
 text-align: center;
-padding: 30px;
+padding: 4px;
+}
+.ui-block-c img
+{
+max-height:90px;height:expression(document.body.clientHeight > 90? "90px": "auto");
+}
+
+.more
+{
+border: 1px solid lightgrey;
+height: 120px;
+font-weight: bold;
+text-align: center;
+padding: 4px;
+}
+.more img
+{
+max-height:120px;height:expression(document.body.clientHeight > 120? "120px": "auto");
 }
 </style>
 {% endblock %}
 {% block content %}
-    <div><a href="{% url 'register' %}" data-ajax="false">注册</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'user_login' %}" data-ajax="false">登陆</a></div>
-    <hr>
+
+    <div id="slider" class="nivoSlider">
+    <img src="{{media_url}}a1.jpg" alt="" />
+    <img src="{{media_url}}a2.jpg" alt="" />
+    <img src="{{media_url}}a3.jpg" alt="" />
+	</div>
+
     <div>
-    <label><b>问题分类</b></label>&nbsp;&nbsp;<a href="{% url 'more_type' %}" data-ajax="false">更多</a><br><br>
+   
     <div class="ui-grid-a">
 	{% for type in types %}
-     		<div class="ui-block-{% if forloop.counter == 1 or forloop.counter == 3 or forloop.counter == 5 %}a{% else %}b{% endif %}"><span><a href="{% url 'view_worktype' type.id %}" data-ajax="false">{{type.name}}</a></span></div>
+     		<div class="ui-block-c"><a href="{% url 'view_worktype' type.id %}" data-ajax="false"><img src="{{media_url}}{{type.img}}" alt="{{type.name}}" /></a><br><span style="color:grey">{{type.name}}</span></div>
 	{% endfor %}
    </div>
+   <div >
+    <div class="more"><a href="{% url 'more_type' %}" data-ajax="false"><img src="{{media_url}}worktype/more.jpg"/></a></div>
+
     </div>
-    <hr>
+ 
     <div>
     <label><b>最新问题</b></label>&nbsp;&nbsp;<a href="{% url 'more_ask' %}" data-ajax="false">更多</a><br><br>
     <ul data-role="listview">

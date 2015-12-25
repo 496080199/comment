@@ -25,6 +25,7 @@ class Profile(models.Model):
         return file_name_suffix
 class WorkType(models.Model):
     name=models.CharField(max_length=100)
+    img=models.FileField(upload_to='worktype',null=True,blank=True)
     order=models.IntegerField(default=0)
     def __unicode__(self):
         return self.name

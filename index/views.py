@@ -17,7 +17,7 @@ def index(request):
     works=Work.objects.filter(status=1).order_by('-time')[:3]
     #return HttpResponse(types[0])
     
-    return render(request,'index.html',{'logs':logs,'works':works,'types':types})
+    return render(request,'index.html',{'logs':logs,'works':works,'types':types,'media_url':MEDIA_URL})
 def more_type(request):
     types=WorkType.objects.all().order_by('order')
     page_size=15
@@ -365,8 +365,7 @@ def del_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    app=request.user.profile.applicate_set.get(work=work)
-    com=app.comment
+    com=request.user.profile.comment_set.get(work=work)
     if com.video:
         os.remove(com.video.name)
     if com.audio:
@@ -379,8 +378,7 @@ def submit_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    applicate=request.user.profile.applicate_set.get(work=work)
-    com=applicate.comment
+    com=request.user.profile.comment_set.get(work=work)
     com.status=2
     com.save()
     apps=work.applicate_set.filter(stat=1)
