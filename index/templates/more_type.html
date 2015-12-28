@@ -5,7 +5,7 @@
     <ul data-role="listview" data-filter="true">
     {% for type in type_list %}
    
-    <li><a href="{% url 'view_worktype' type.id %}" data-ajax="false">{{type.name}}</a></li>
+    <li><a href="{% url 'view_worktype' type.id %}" data-ajax="false"><img src="{{media_url}}{{type.img}}"/>{{type.name}}</a></li>
     
     
     {% endfor %}
@@ -16,10 +16,10 @@
 				
 						<div style="text-align:center;"><label>第{{type_list.number}}页 总共{{type_list.paginator.num_pages}}页</label><div>
 				{% if type_list.has_previous %}
-						<a type="button" data-theme="b" data-icon="arrow-l" href="?page={{type_list.previous_page_number}}">上一页</a>
+						<a type="button"  data-icon="arrow-l" href="?page={{type_list.previous_page_number}}">上一页</a>
 				{% endif %}
 				{% if type_list.has_next %}
-						<a type="button" data-theme="b" data-icon="arrow-r" href="?page={{type_list.next_page_number}}">下一页</a>
+						<a type="button"  data-icon="arrow-r" href="?page={{type_list.next_page_number}}">下一页</a>
 				{% endif %}
 			</div>
 

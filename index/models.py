@@ -42,6 +42,7 @@ class Work(models.Model):
     time=models.DateTimeField(auto_now=True)
     status=models.IntegerField(default=1)
     addit=models.TextField(null=True)
+    app_sum=models.IntegerField(default=0)
     student=models.ForeignKey(Profile)
     def getvideosuffix(self):
         file_name_suffix=os.path.splitext(self.video.name)[1].lower()

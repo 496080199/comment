@@ -20,7 +20,7 @@ def index(request):
     return render(request,'index.html',{'logs':logs,'works':works,'types':types,'media_url':MEDIA_URL})
 def more_type(request):
     types=WorkType.objects.all().order_by('order')
-    page_size=15
+    page_size=8
     paginator=Paginator(types,page_size)
     try:
         page=int(request.GET.get('page','1'))
@@ -30,10 +30,10 @@ def more_type(request):
         type_list=paginator.page(page)
     except (EmptyPage,InvalidPage):
         type_list=paginator.page(paginator.num_pages)
-    return render(request,'more_type.html',{'type_list':type_list})
+    return render(request,'more_type.html',{'type_list':type_list,'media_url':MEDIA_URL})
 def more_ask(request):
     works=Work.objects.filter(status=1).order_by('-time')
-    page_size=15
+    page_size=8
     paginator=Paginator(works,page_size)
     try:
         page=int(request.GET.get('page','1'))
@@ -44,6 +44,33 @@ def more_ask(request):
     except (EmptyPage,InvalidPage):
         work_list=paginator.page(paginator.num_pages)
     return render(request,'more_ask.html',{'work_list':work_list})
+def top_teacher(request):
+    teachers=Profile.objects.filter(type=1).order_by('-score')
+    page_size=8
+    paginator=Paginator(teachers,page_size)
+    try:
+        page=int(request.GET.get('page','1'))
+    except ValueError:
+       page=1
+    try:
+        teacher_list=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        teacher_list=paginator.page(paginator.num_pages)
+    return render(request,'top_teacher.html',{'teacher_list':teacher_list,'media_url':MEDIA_URL})
+    
+def hot_ask(request):
+    works=Work.objects.filter(status=1).order_by('-app_sum')
+    page_size=15
+    paginator=Paginator(works,page_size)
+    try:
+        page=int(request.GET.get('page','1'))
+    except ValueError:
+       page=1
+    try:
+        work_list=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        work_list=paginator.page(paginator.num_pages)
+    return render(request,'hot_ask.html',{'work_list':work_list})
 def more_log(request):
     logs=Log.objects.all().order_by('-time')
     page_size=15
@@ -281,6 +308,8 @@ def app_answer(request,id):
     app.teacher=request.user.profile
     app.stat=0
     app.save()
+    work.app_sum+=1
+    work.save()
     message(request.user.profile,"发起了解答申请,问题是："+str(work.name),work.student.id)
     return redirect(reverse('my_applicate'))
 def del_answer(request,id):
@@ -289,6 +318,8 @@ def del_answer(request,id):
     work=Work.objects.get(id=id)
     app=request.user.profile.applicate_set.filter(work=work)
     app.delete()
+    work.app_sum-=1
+    work.save()
     log(request.user.profile,"删除了一个答疑")
     return redirect(reverse('my_applicate'))
 def my_applicate(request):

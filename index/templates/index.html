@@ -34,23 +34,27 @@ height: 120px;
 font-weight: bold;
 text-align: center;
 padding: 4px;
+
 }
 .ui-block-c img
 {
-max-height:90px;height:expression(document.body.clientHeight > 90? "90px": "auto");
+max-height:90px;
+height:expression(document.body.clientHeight > 90? "90px": "auto");
+max-width:90px;
+width:expression(document.body.clientWidth > 90? "90px": "auto");
 }
 
 .more
 {
 border: 1px solid lightgrey;
-height: 120px;
+height: 100px;
 font-weight: bold;
 text-align: center;
-padding: 4px;
+padding: 20px;
 }
 .more img
 {
-max-height:120px;height:expression(document.body.clientHeight > 120? "120px": "auto");
+max-height:80px;height:expression(document.body.clientHeight > 80? "80px": "auto");
 }
 </style>
 {% endblock %}
@@ -70,33 +74,17 @@ max-height:120px;height:expression(document.body.clientHeight > 120? "120px": "a
 	{% endfor %}
    </div>
    <div >
-    <div class="more"><a href="{% url 'more_type' %}" data-ajax="false"><img src="{{media_url}}worktype/more.jpg"/></a></div>
+    <div class="more"><a href="{% url 'more_type' %}" data-ajax="false"><img src="{{media_url}}worktype/more.png"/></a><br><span style="color:grey">更多分类</span></div>
 
     </div>
- 
-    <div>
-    <label><b>最新问题</b></label>&nbsp;&nbsp;<a href="{% url 'more_ask' %}" data-ajax="false">更多</a><br><br>
-    <ul data-role="listview">
-    {% for work in works %}   
-    <li><a href="{% url 'show_answer' work.id %}" data-ajax="false">{{work.name}}</a></li>
-    {% endfor %}
-    </ul>
-    </div>
-
-    <hr>
-    <div>
-    <label><b>最新动态</b></label>&nbsp;&nbsp;<a href="{% url 'more_log' %}" data-ajax="false">更多</a><br><br>
-    <ul data-role="listview">
-    {% for log in logs %}
-    <li>
-    {% if log.profile.type == 1 %}
-    <a href="{% url 'view_teacher' log.profile.id %}" data-ajax="false">{{log.profile.user.last_name}}老师{{log.content}}</a>
-    {% elif log.profile.type == 2 %}
-    <a href="{% url 'view_student' log.profile.id %}" data-ajax="false">{{log.profile.user.last_name}}同学{{log.content}}</a>
-    {% endif %}
-    </li>
-    {% endfor %}
-    </ul>
-    </div>
+ <div class="ui-grid-b">
+     		<div class="ui-block-c" style="line-height:50px;"><a href="{% url 'more_ask' %}" data-ajax="false"><span style="color:grey">最新问题</span><br><img src="{{media_url}}worktype/new.png"/></a></div>
+     		<div class="ui-block-c" style="line-height:50px;"><a href="{% url 'top_teacher' %}" data-ajax="false"><span style="color:grey">教师排行</span><br><img src="{{media_url}}worktype/top.png"/></a></div>
+     		<div class="ui-block-c" style="line-height:50px;"><a href="{% url 'hot_ask' %}" data-ajax="false"><span style="color:grey">热门问题</span><br><img src="{{media_url}}worktype/hot.png"/></a></div>
+   </div>
+   <br>
+   
+    
+   
     
 {% endblock %}

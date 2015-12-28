@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>教师排行：<h3>
+
+    <ul data-role="listview" data-filter="true">
+    {% for teacher in teacher_list %}
+    <li><a href="{% url 'view_teacher' teacher.id %}" data-ajax="false"><img src="{{media_url}}{{teacher.img}}"/>{{teacher.user.last_name}}老师<span class="ui-li-count">分数：{{teacher.score}}</span></a></li>
+    
+    {% endfor %}
+    </ul>
+
+    <div>
+    <br><br>
+				
+						<div style="text-align:center;"><label>第{{teacher_list.number}}页 总共{{teacher_list.paginator.num_pages}}页</label><div>
+				{% if teacher_list.has_previous %}
+						<a type="button" data-theme="b" data-icon="arrow-l" href="?page={{teacher_list.previous_page_number}}">上一页</a>
+				{% endif %}
+				{% if teacher_list.has_next %}
+						<a type="button" data-theme="b" data-icon="arrow-r" href="?page={{teacher_list.next_page_number}}">下一页</a>
+				{% endif %}
+			</div>
+
+
+    
+
+    
+    
+    
+    
+    <a href="{% url 'index' %}" data-role="button" data-ajax="false">返回</a>
+{% endblock %}
