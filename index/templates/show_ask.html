@@ -9,6 +9,14 @@
     <label>类型:</label><br>
 	{{work.worktype}}
 	<hr>
+	<label>费用类型:</label><br>
+	{% if work.order %}
+	有付费
+	{% else %}
+	无付费
+	<hr>
+	{% endif %}
+	<hr>
     {% if work.desc %}
     <label>简述:</label><br>
     {{work.desc}}

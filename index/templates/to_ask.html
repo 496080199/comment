@@ -7,7 +7,18 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/workupload.js"></script>
 <script src="{{STATIC_URL}}js/code.js"></script>
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/code.css">
-
+<script type="text/javascript">
+function getPrice(){
+	var pay=$("#pay").children('option:selected').val();
+	
+	if(pay== "1"){
+		$("#price").show();
+	}
+	else if(pay=="0"){
+		$("#price").hide();
+	}
+}
+</script>
 {% endblock %}
 {% block body %}
 <body onload="createCode();">
@@ -17,8 +28,17 @@
 
 <div style="text-align:center;">提交问题</div>
 	<label>名称:</label>{{form.name}}{{form.name.errors}} 
-	 <label>类型:</label>{{form.worktype}}{{form.worktype.errors}}  
+	 <label>类型:</label>{{form.worktype}}{{form.worktype.errors}}
 	<label>简述(选填）:</label>{{form.desc}}{{form.desc.errors}}  
+	<label>是否付费:</label>
+	<select id="pay" name="pay" onchange="getPrice();">
+<option value="0" selected>否</option>
+<option value="1">是</option>
+</select>{{form.pay.errors}} 
+	<br>
+	<div id="price" hidden>
+	<label>费用(元）：</label><input type="range" name="price" min="10" max="100" value="10"/>{{form.price.errors}}
+	</div>
 	<label>详细内容:</label>{{form.content}}{{form.content.errors}}
 	<label>视频（可选）:</label><input type="file" name="video" id="id_video"  onchange="videoSelected();" />{{form.video.errors}}  
 	<div id="videoName">

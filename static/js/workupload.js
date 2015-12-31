@@ -93,13 +93,13 @@ function uploadProgress(evt) {
 function uploadComplete(evt) {
         /* This event is raised when the server send back a response */
     alert("提交成功");
-    //window.location.href="/user_login";
+    window.location.href="/user_login";
 }
 function uploadEditComplete(evt) {
         /* This event is raised when the server send back a response */
      alert("提交成功");
      var id=document.getElementById('id')
-	 window.location.href="/show_ask/"+parseInt(id.innerHTML);
+	 //window.location.href="/show_ask/"+parseInt(id.innerHTML);
 }
 function uploadComComplete(evt) {
         /* This event is raised when the server send back a response */

@@ -80,6 +80,16 @@ class Message(models.Model):
     time=models.DateTimeField(auto_now=True)
     obj=models.IntegerField()
     profile=models.ForeignKey(Profile)
+class Order(models.Model):
+    subject=models.CharField(max_length=200)
+    out_trade_no=models.CharField(max_length=200)
+    total_fee=models.FloatField()
+    status=models.IntegerField(default=0)
+    time=models.DateTimeField(auto_now=True)
+    work=models.OneToOneField(Work)
+    
+    
+
 
 
 

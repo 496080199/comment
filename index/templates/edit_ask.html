@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% block head %}
-<script type="text/javascript">
 <script src="//cdn.bootcss.com/jquery/1.8.3/jquery.js"></script>
 <script src="//cdn.bootcss.com/jquery-validate/1.11.1/jquery.validate.min.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/workupload.js"></script>
@@ -14,6 +13,7 @@
 <div style="text-align:center;">修改问题</div>
 	<div id="id" hidden>{{id}}</div>
 	<label>名称:</label>{{form.name}}{{form.name.errors}}   
+	<label>类型:</label>{{form.worktype}}{{form.worktype.errors}}  
 	<label>简述(选填）:</label>{{form.desc}}{{form.desc.errors}}  
 	<label>详细内容:</label>{{form.content}}{{form.content.errors}}
 	<label>视频（可选）:</label>{{form.video}}{{form.video.errors}}

@@ -57,5 +57,9 @@ urlpatterns = [
     url(r'^view_com/([0-9]+)$','index.views.view_com',name='view_com'),
     url(r'^change_app_stat/([0-9]+)$','index.views.change_app_stat',name='change_app_stat'),
     url(r'^change_com_score/([0-9]+)$','index.views.change_com_score',name='change_com_score'),
+    url(r'^my_order$','index.views.my_order',name='my_order'),
+    url(r'^view_order/([0-9]+)$','index.views.view_order',name='view_order'),
+    url(r'^to_pay/([0-9]+)$','index.views.to_pay',name='to_pay'),
+    url(r'^pay_notify','index.views.pay_notify',name='pay_notify'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 

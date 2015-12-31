@@ -6,9 +6,16 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.hashers import make_password
-from comment.settings import MEDIA_URL
-from django.views.decorators.csrf import ensure_csrf_cookie
+from comment.settings import MEDIA_URL, ALIPAY,RETURN_URL,NOTIFY_URL
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
+from datetime import datetime
+import random
+from alipay import Alipay
+import httplib2
+from django.views.decorators.csrf import csrf_exempt
+from django.views.csrf import csrf_failure
+from urllib import urlencode
 
 # Create your views here.
 def index(request):
@@ -461,7 +468,19 @@ def to_ask(request):
             work.video=form['video'].value()
             work.audio=form['audio'].value()
             work.image=form['image'].value()
-            work.save()   
+            work.save() 
+            if form['pay'].value()=='1':
+                order=Order(work=work)
+                order.subject=work.name
+                rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
+                order.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
+                price=int(form['price'].value())
+                if price:
+                    order.total_fee=price
+                else:
+                    order.total_fee=10
+                order.save()
+                  
             log(request.user.profile,"发布了一个问题")
     else:
         form=WorkForm()
@@ -618,6 +637,57 @@ def message(profile,action,id):
 def view_message(request):
     messages=Message.objects.filter(obj=request.user.profile.id).order_by('-time')
     return render(request,'view_message.html',{'messages':messages})
+
+def my_order(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    works=request.user.profile.work_set.exclude(order__id__isnull=True)
+    return render(request,'my_order.html',{'works':works})
+def view_order(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    order=Order.objects.get(id=id)
+    return render(request,'view_order.html',{'order':order,})
+def to_pay(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    order=Order.objects.get(id=id)
+    pay_url=ALIPAY.create_direct_pay_by_user_url(out_trade_no=order.out_trade_no, subject=order.subject, total_fee=str(order.total_fee), return_url=RETURN_URL, notify_url=NOTIFY_URL)
+    return redirect(pay_url)
+@csrf_exempt
+def pay_notify(request):
+    #alipay=Alipay(pid=PID, key=KEY, seller_email=SELLER_EMAIL)
+    param=request.POST
+    if ALIPAY.verify_notify(**param):
+        out_trade_no=param['out_trade_no']
+        print out_trade_no
+        subject=param['subject']
+        print subject
+        total_fee=param['total_fee']
+        print total_fee
+        trade_status=param['trade_status']
+        print trade_status
+        order=Order.objects.get(out_trade_no=out_trade_no)
+        print order.subject
+        print order.total_fee
+        if order.subject==subject and order.total_fee==total_fee: 
+            print 'True'
+            if trade_status=='TRADE_FINISHED':
+                print 'TRADE_FINISHED'
+                order.status=1
+                order.save()
+                return HttpResponse('通知正常')
+            elif  trade_status=='TRADE_SUCCESS':
+                print 'TRADE_SUCCESS'
+                order.status=1
+                order.save()
+                return HttpResponse('通知正常')
+    else:
+        print 'ERR'
+        return HttpResponse('通知不正确')
+    
+    
+    
     
     
     

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h3>订单列表：<h3>
+    <ol data-role="listview" data-filter="true">
+    {% for work in works %}
+   
+    <li>
+    <a href="{% url 'view_order' work.order.id %}" data-ajax="false">{{work.order.subject}}
+    <span class="ui-li-count">{% if work.order.status == 1 %} 已支付 {% elif work.order.status == 0 %} 未支付 {% endif %}
+    </a></li>
+    
+    
+    {% endfor %}
+
+    
+
+    
+    
+    
+    
+    <a href="{% url 'user_login' %}" data-role="button">返回</a>
+{% endblock %}

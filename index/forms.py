@@ -97,13 +97,19 @@ class ImgForm(forms.Form):
 
     
 class WorkForm(ModelForm):
+    pay_list=(
+            (0,'否'),
+            (1,'是'),
+            )
+    pay=forms.ChoiceField(choices=pay_list,required=False)
+    price=forms.FloatField(required=False)
     desc=forms.CharField(required=False)
     video=forms.FileField(required=False)
     audio=forms.FileField(required=False)
     image=forms.ImageField(required=False)
     class Meta:
         model=Work
-        fields='name','worktype','desc','content','video','audio','image',
+        fields='name','worktype','desc','content','video','audio','image','pay','price',
         
 class CommentForm(ModelForm):
     video=forms.FileField(required=False)
