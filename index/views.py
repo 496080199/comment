@@ -317,7 +317,7 @@ def app_answer(request,id):
     app.save()
     work.app_sum+=1
     work.save()
-    message(request.user.profile,"发起了解答申请,问题是："+str(work.name),work.student.id)
+    message(request.user.profile,"发起了解答申请,问题是："+work.name.encode('utf8'),work.student.id)
     return redirect(reverse('my_applicate'))
 def del_answer(request,id):
     if not request.user.is_authenticated():
@@ -332,8 +332,13 @@ def del_answer(request,id):
 def my_applicate(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    apps=request.user.profile.applicate_set.all().order_by('-time')
+    apps=request.user.profile.applicate_set.filter(work__status=1).order_by('-time')
     return render(request,'my_applicate.html',{'apps':apps}) 
+def my_comment(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    apps=request.user.profile.applicate_set.filter(work__status__gt=1).order_by('-time')
+    return render(request,'my_comment.html',{'apps':apps}) 
 def to_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -416,7 +421,7 @@ def submit_com(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
     work=Work.objects.get(id=id)
-    com=request.user.profile.comment_set.get(work=work)
+    com=request.user.profile.applicate_set.get(work=work).comment
     com.status=2
     com.save()
     apps=work.applicate_set.filter(stat=1)
@@ -428,7 +433,7 @@ def submit_com(request,id):
             return redirect(reverse('show_answer',args=(id,))) 
     work.status=3
     work.save()
-    message(request.user.profile,"提交了解答,解答的问题是："+str(work.name),work.student.id)
+    message(request.user.profile,"提交了解答,解答的问题是："+work.name.encode('utf-8'),work.student.id)
     return redirect(reverse('show_answer',args=(id,))) 
 def view_com(request,id):
     info=''
@@ -436,6 +441,9 @@ def view_com(request,id):
         return redirect(reverse('user_login'))
     work=request.user.profile.work_set.get(id=id)
     apps=work.applicate_set.filter(stat=1)
+    order=None
+    if work.order:
+        order=Order.objects.get(out_trade_no=work.order)
     if request.method=='POST':
         scores=0
         for app in apps:
@@ -447,12 +455,13 @@ def view_com(request,id):
             for app in apps:
                 app.teacher.score+=app.comment.score
                 app.teacher.save()
-                message(request.user.profile,"给您评了"+str(app.comment.score)+"分，问题是："+str(app.work.name),app.teacher.id)
+                
+                message(request.user.profile,"给您评了"+str(app.comment.score)+"分，问题是："+app.work.name.encode('utf-8'),app.teacher.id)
             work.save()
             return redirect(reverse('show_ask',args=(id,)))
         else:
             info='ERR'
-    return render(request,'view_com.html',{'apps':apps,'work':work,'info':info,'media_url':MEDIA_URL,})
+    return render(request,'view_com.html',{'apps':apps,'work':work,'order':order,'info':info,'media_url':MEDIA_URL,})
 def to_ask(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -470,7 +479,8 @@ def to_ask(request):
             work.image=form['image'].value()
             work.save() 
             if form['pay'].value()=='1':
-                order=Order(work=work)
+                order=Order()
+                order.user_id=request.user.id
                 order.subject=work.name
                 rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
                 order.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
@@ -479,7 +489,10 @@ def to_ask(request):
                     order.total_fee=price
                 else:
                     order.total_fee=10
+                    
                 order.save()
+                work.order=order.out_trade_no
+                work.save()
                   
             log(request.user.profile,"发布了一个问题")
     else:
@@ -526,10 +539,15 @@ def manage_app(request,id):
             work.status=2
             work.save()
             for app in work.applicate_set.filter(stat=1):
-                message(request.user.profile,"同意了您的申请，问题是："+str(work.name),app.teacher.id)
+                message(request.user.profile,"同意了您的申请，问题是："+work.name.encode('utf-8'),app.teacher.id)
             
             return redirect(reverse('show_ask',args=(id,)))
         info='ERR'
+    else:
+        if work.order:
+            order=Order.objects.get(out_trade_no=work.order)
+            if order.status!=1:
+                return redirect(reverse('view_order',args=(order.id,)))
     return render(request,'manage_app.html',{'apps':apps,'work':work,'info':info})
 
 
@@ -583,7 +601,7 @@ def addit_ask(request,id):
         work.addit=request.POST['addit']
         work.save()
         for app in work.applicate_set.filter(stat=1):
-            message(request.user.profile,"补充了说明，问题是："+str(work.name),app.teacher.id)
+            message(request.user.profile,"补充了说明，问题是："+work.name.encode('utf-8'),app.teacher.id)
     return redirect(reverse('show_ask',args=(id,)))
         
 def del_ask(request,id):
@@ -641,8 +659,8 @@ def view_message(request):
 def my_order(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    works=request.user.profile.work_set.exclude(order__id__isnull=True)
-    return render(request,'my_order.html',{'works':works})
+    orders=Order.objects.filter(user_id=request.user.id).order_by('-time')
+    return render(request,'my_order.html',{'orders':orders})
 def view_order(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -656,35 +674,37 @@ def to_pay(request,id):
     return redirect(pay_url)
 @csrf_exempt
 def pay_notify(request):
-    #alipay=Alipay(pid=PID, key=KEY, seller_email=SELLER_EMAIL)
-    param=request.POST
+    param=request.POST.dict()
     if ALIPAY.verify_notify(**param):
         out_trade_no=param['out_trade_no']
-        print out_trade_no
-        subject=param['subject']
-        print subject
+        trade_no=param['trade_no']
         total_fee=param['total_fee']
-        print total_fee
         trade_status=param['trade_status']
-        print trade_status
         order=Order.objects.get(out_trade_no=out_trade_no)
-        print order.subject
-        print order.total_fee
-        if order.subject==subject and order.total_fee==total_fee: 
-            print 'True'
+        if str(order.total_fee)==total_fee: 
             if trade_status=='TRADE_FINISHED':
                 print 'TRADE_FINISHED'
-                order.status=1
-                order.save()
+                if order.status!=1:
+                    order.status=1
+                    order.trade_no=trade_no
+                    order.save()
                 return HttpResponse('通知正常')
             elif  trade_status=='TRADE_SUCCESS':
                 print 'TRADE_SUCCESS'
-                order.status=1
-                order.save()
+                if order.status!=1:
+                    order.status=1
+                    order.trade_no=trade_no
+                    order.save()
                 return HttpResponse('通知正常')
     else:
         print 'ERR'
         return HttpResponse('通知不正确')
+
+def pay_return(request):
+    param=request.GET
+    out_trade_no=param['out_trade_no']
+    work=Work.objects.get(order=out_trade_no)
+    return redirect(reverse('manage_app',args=(work.id,)))
     
     
     

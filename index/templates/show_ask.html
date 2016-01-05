@@ -12,9 +12,12 @@
 	<label>费用类型:</label><br>
 	{% if work.order %}
 	有付费
+	<hr>
+	<label>费用:</label><br>
+	{{work.getorderfee}}元
+	
 	{% else %}
 	无付费
-	<hr>
 	{% endif %}
 	<hr>
     {% if work.desc %}
@@ -95,7 +98,17 @@
      {% else %}
    		  无
      {% endif %}
+     {% if work.order %}
+     {% if work.getorderstatus == 1 %}
      <a href="{% url 'manage_app' work.id %}" data-role="button" data-theme="b" data-ajax="false">申请管理</a>
+     {% else %}
+     <a href="{% url 'view_order' work.getorderid %}" data-role="button" data-theme="b" data-ajax="false">支付订单后进行申请管理</a>
+     {% endif %}
+     {% else %}
+     <a href="{% url 'manage_app' work.id %}" data-role="button" data-theme="b" data-ajax="false">申请管理</a>
+     {% endif %}
+     
+     
     {% endif %}
     {% if work.status == 2 %}
     <form method="post"  data-ajax="false" action="{% url 'addit_ask' work.id %}">{% csrf_token %}

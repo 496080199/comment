@@ -25,6 +25,8 @@ $.ajaxSetup({
   {% endfor %}
   {% if info == 'ERR' %}
   <label style="color:red">错误：您至少同意一个申请并不超过三个申请</label>
+  {% elif info == 'NOPAY' %}
+  <label style="color:red">未支付：请先去支付此订单。<a href="{% url 'to_pay' work.order.id %}">去支付</a></label>
   {% endif %}
   <form id="form2" name="form2" method="post" action="{% url 'manage_app' work.id %}" data-ajax="false">{% csrf_token %}
   <button type="submit"data-theme="b" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">完成申请</button>

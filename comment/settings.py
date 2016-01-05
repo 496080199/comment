@@ -122,9 +122,9 @@ STATIC_URL = '/static/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
 SESSION_COOKIE_AGE=1500
 
-PID='2088911513001102'
-KEY='mvpqcyhfr9ykpq21sy3c0i97mnxlnu87'
-SELLER_EMAIL='ycxc2@ycxc.com'
-RETURN_URL='http://comment.xiuche580.com/my_order'
+PID=''
+KEY=''
+SELLER_EMAIL=''
+RETURN_URL='http://comment.xiuche580.com/pay_return'
 NOTIFY_URL='http://comment.xiuche580.com/pay_notify'
 ALIPAY=Alipay(pid=PID, key=KEY, seller_email=SELLER_EMAIL)

@@ -2,11 +2,11 @@
 {% block content %}
     <h3>订单列表：<h3>
     <ol data-role="listview" data-filter="true">
-    {% for work in works %}
+    {% for order in orders %}
    
     <li>
-    <a href="{% url 'view_order' work.order.id %}" data-ajax="false">{{work.order.subject}}
-    <span class="ui-li-count">{% if work.order.status == 1 %} 已支付 {% elif work.order.status == 0 %} 未支付 {% endif %}
+    <a href="{% url 'view_order' order.id %}" data-ajax="false">{{order.subject}}
+    <span class="ui-li-count">{% if order.status == 1 %} 已支付 {% elif order.status == 0 %} 未支付 {% endif %}
     </a></li>
     
     

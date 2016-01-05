@@ -75,7 +75,7 @@
      		{% if n == 0 %}
      		<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">提交解答</a>
      		{% elif n == 1 %}
-     		<a href="{% url 'submit_com' work.id %}" data-role="button" data-theme="b" data-ajax="false" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">确认提交解答</a>
+     		<a href="{% url 'submit_com' id %}" data-role="button" data-theme="b" data-ajax="false" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">确认提交解答</a>
      		<br>
      		<a href="{% url 'edit_com' id %}" data-role="button" data-theme="b" data-ajax="false">修改解答</a>
      		<a href="{% url 'del_com' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-theme="a" data-ajax="false">删除解答</a>
@@ -84,11 +84,54 @@
      		{% endif %}
      	 {% elif applicate.work.status == 3 %}
      	 <p>此问题所有解答已提交，等待学生评分</p>
+     	 
      	 {% elif applicate.work.status == 4 %}
      	 <p>解答已结束，您的评分为{{applicate.comment.score}}分</p>
     	 {% else %}
      	<p>正在申请答疑中</p>
      	{% endif %}
+     	<div>
+    <h4>我的解答</h4>
+    <label>内容：</label><br>
+    <div>{{applicate.comment.content}}</div>
+    <hr>
+    {% if applicate.comment.video %}
+    <label>视频：</label><br>
+    
+<video id="really-cool-video" class="video-js vjs-default-skin" controls 
+ preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
+ data-setup='{}'>
+  <source src="{{media_url}}{{applicate.comment.video}}" type='video/mp4'>
+  <p class="vjs-no-js">
+    To view this video please enable JavaScript, and consider upgrading to a web browser
+    that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+  </p>
+</video>
+<a href="{{media_url}}{{applicate.comment.video}}" >点击下载</a>
+<br>
+   <hr>
+{% endif %}
+{% if applicate.comment.audio %}
+   <label>音频：</label><br>
+   <audio src="{{media_url}}{{applicate.comment.audio}}" controls>
+	您的浏览器不支持 audio 标签。
+	</audio>
+
+	<br>
+	<a href="{{media_url}}{{applicate.comment.audio}}" >点击下载</a>
+<br>
+   <hr>
+	{% endif %}
+	{% if applicate.comment.image %}
+ 	<label>图片:</label><br>
+ 			<img src="{{media_url}}{{applicate.comment.image}}" alt="截图" height="300" width="300" />
+<hr>
+ 	{% endif %}
+
+
+  
+
+  </div>
     
     {% elif applicate.stat == 0 %}
     {% if applicate.work.status == 2 or applicate.work.status == 1%}

@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h3>我的申请</h3>
+    <h3>我的解答</h3>
     <ol data-role="listview">
     {% for app in apps %}
     <li><a href="{% url 'show_answer' app.work.id %}" data-ajax="false">{{app.work.name}}
     <span class="ui-li-count">
-    {% if app.stat == 0 %}
-    未同意
-    {% elif app.stat == 1 %}
-    已同意
+    {% if app.comment.status == 1 %}
+    未提交
+    {% elif app.comment.status == 2 %}
+    已提交
+    {% else %}
+    未写解答
     {% endif %}
 	</span>
     </a></li>

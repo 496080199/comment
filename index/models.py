@@ -3,6 +3,16 @@ from comment.settings import MEDIA_ROOT, MEDIA_URL
 from django.contrib.auth.models import User
 import os
 # Create your models here.
+class Order(models.Model):
+    user_id=models.IntegerField()
+    type=models.IntegerField(default=1)
+    subject=models.CharField(max_length=200)
+    out_trade_no=models.CharField(max_length=200)
+    total_fee=models.FloatField()
+    status=models.IntegerField(default=0)
+    trade_no=models.CharField(max_length=200)
+    time=models.DateTimeField(auto_now=True)
+    
 class Profile(models.Model):
     type=models.IntegerField()
     sex=models.CharField(max_length=100)
@@ -43,7 +53,17 @@ class Work(models.Model):
     status=models.IntegerField(default=1)
     addit=models.TextField(null=True)
     app_sum=models.IntegerField(default=0)
+    order=models.CharField(max_length=200)
     student=models.ForeignKey(Profile)
+    def getorderid(self):
+        order=Order.objects.get(out_trade_no=self.order)
+        return order.id
+    def getorderstatus(self):
+        order=Order.objects.get(out_trade_no=self.order)
+        return order.status
+    def getorderfee(self):
+        order=Order.objects.get(out_trade_no=self.order)
+        return order.total_fee
     def getvideosuffix(self):
         file_name_suffix=os.path.splitext(self.video.name)[1].lower()
         return file_name_suffix
@@ -80,13 +100,7 @@ class Message(models.Model):
     time=models.DateTimeField(auto_now=True)
     obj=models.IntegerField()
     profile=models.ForeignKey(Profile)
-class Order(models.Model):
-    subject=models.CharField(max_length=200)
-    out_trade_no=models.CharField(max_length=200)
-    total_fee=models.FloatField()
-    status=models.IntegerField(default=0)
-    time=models.DateTimeField(auto_now=True)
-    work=models.OneToOneField(Work)
+
     
     
 

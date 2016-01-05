@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^app_answer/([0-9]+)$','index.views.app_answer',name='app_answer'),
     url(r'^del_answer/([0-9]+)$','index.views.del_answer',name='del_answer'),
     url(r'^my_applicate$','index.views.my_applicate',name='my_applicate'),
+    url(r'^my_comment$','index.views.my_comment',name='my_comment'),
     url(r'^to_ask$','index.views.to_ask',name='to_ask'),
     url(r'^my_ask$','index.views.my_ask',name='my_ask'),
     url(r'^manage_app/([0-9]+)$','index.views.manage_app',name='manage_app'),
@@ -61,5 +62,6 @@ urlpatterns = [
     url(r'^view_order/([0-9]+)$','index.views.view_order',name='view_order'),
     url(r'^to_pay/([0-9]+)$','index.views.to_pay',name='to_pay'),
     url(r'^pay_notify','index.views.pay_notify',name='pay_notify'),
+    url(r'^pay_return','index.views.pay_return',name='pay_return'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 
