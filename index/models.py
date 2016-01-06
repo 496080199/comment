@@ -12,6 +12,8 @@ class Order(models.Model):
     status=models.IntegerField(default=0)
     trade_no=models.CharField(max_length=200)
     time=models.DateTimeField(auto_now=True)
+    def __unicode__(self):              
+        return self.subject
     
 class Profile(models.Model):
     type=models.IntegerField()

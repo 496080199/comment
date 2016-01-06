@@ -455,6 +455,14 @@ def view_com(request,id):
             for app in apps:
                 app.teacher.score+=app.comment.score
                 app.teacher.save()
+                if work.order:
+                    neworder=Order(user_id=app.teacher.user.id)
+                    neworder.type=2
+                    neworder.subject=work.name+'的解答费'
+                    rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
+                    neworder.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
+                    neworder.total_fee=round(float(app.comment.score)/10*(order.total_fee),2)
+                    neworder.save()
                 
                 message(request.user.profile,"给您评了"+str(app.comment.score)+"分，问题是："+app.work.name.encode('utf-8'),app.teacher.id)
             work.save()
@@ -481,7 +489,7 @@ def to_ask(request):
             if form['pay'].value()=='1':
                 order=Order()
                 order.user_id=request.user.id
-                order.subject=work.name
+                order.subject=work.name+'的提问费'
                 rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
                 order.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
                 price=int(form['price'].value())

@@ -11,7 +11,7 @@
 {% block content %}
 <div id="id" hidden>{{id}}</div>
 <form id="form" method="post" enctype="multipart/form-data" data-ajax="false" action="javascript: uploadCom()">{% csrf_token %}
-<div style="text-align:center;">提交解答</div>
+<div style="text-align:center;">填写解答</div>
 	<label>内容:</label>{{form.content}}{{form.content.errors}} 
 	<br>  
 	<label>视频（可选）:</label><input type="file" name="video" id="id_video"  onchange="videoSelected();" />{{form.video.errors}}  

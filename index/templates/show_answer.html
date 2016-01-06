@@ -73,9 +73,9 @@
      		<hr>
      		{% endif %}
      		{% if n == 0 %}
-     		<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">提交解答</a>
+     		<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">填写解答</a>
      		{% elif n == 1 %}
-     		<a href="{% url 'submit_com' id %}" data-role="button" data-theme="b" data-ajax="false" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">确认提交解答</a>
+     		<a href="{% url 'submit_com' id %}" data-role="button" data-theme="b" data-ajax="false" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">提交解答</a>
      		<br>
      		<a href="{% url 'edit_com' id %}" data-role="button" data-theme="b" data-ajax="false">修改解答</a>
      		<a href="{% url 'del_com' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-theme="a" data-ajax="false">删除解答</a>

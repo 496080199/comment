@@ -15,7 +15,7 @@ $.ajaxSetup({
     
 	<a href="{% url 'view_teacher' app.teacher.id %}" type="button" data-ajax="false">查看{{app.teacher.user.last_name}}老师信息</a>
 	<br>
-    <select id="stat" name="stat"  data-role="slider" onchange="changeStat({{app.id}})">
+    <select id="stat{{app.id}}" name="stat{{app.id}}"  data-role="slider" onchange="changeStat({{app.id}})">
     	<option value="0" {% if app.stat == 0 %}selected{% endif %}>拒绝</option>
     	<option value="1" {% if app.stat == 1 %}selected{% endif %}>同意</option>
     </select>
