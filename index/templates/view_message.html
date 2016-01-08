@@ -6,9 +6,9 @@
    
     <li>
     {% if message.profile.type == 1 %}
-    {{message.profile.user.last_name}}老师{{message.content}}&nbsp;&nbsp;时间：{{message.time|date:"Y-m-d H:i:s"}}
+    <a href="{% url 'message_redirect' message.id message.work.id %}" data-ajax="false"><span class="ui-li-count">{% if message.status == 1 %}未读{% elif message.status == 0 %}已读{% endif %}</span>{{message.profile.user.last_name}}老师{{message.content}}{{message.work.name}}&nbsp;&nbsp;时间：{{message.time|date:"Y-m-d H:i:s"}}</a>
     {% elif message.profile.type == 2 %}
-    {{message.profile.user.last_name}}同学{{message.content}}&nbsp;&nbsp;时间：{{message.time|date:"Y-m-d H:i:s"}}
+    <a href="{% url 'message_redirect' message.id message.work.id %}" data-ajax="false"><span class="ui-li-count">{% if message.status == 1 %}未读{% elif message.status == 0 %}已读{% endif %}</span>{{message.profile.user.last_name}}同学{{message.content}}{{message.work.name}}&nbsp;&nbsp;时间：{{message.time|date:"Y-m-d H:i:s"}}</a>
     {% endif %}
     </li>
     

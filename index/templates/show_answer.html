@@ -90,6 +90,7 @@
     	 {% else %}
      	<p>正在申请答疑中</p>
      	{% endif %}
+     	{% if request.user.profile == applicate.profile %}
      	<div>
     <h4>我的解答</h4>
     <label>内容：</label><br>
@@ -132,7 +133,7 @@
   
 
   </div>
-    
+    {% endif %}
     {% elif applicate.stat == 0 %}
     {% if applicate.work.status == 2 or applicate.work.status == 1%}
         <br>

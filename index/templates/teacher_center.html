@@ -10,7 +10,7 @@
 <br>
 <div>
 <ul data-role="listview">
-	  <li><a href="{% url 'view_message' %}" data-ajax="false">查看消息</a></li>
+	  <li><a href="{% url 'view_message' %}" data-ajax="false">查看消息<span class="ui-li-count">{{msg_count}}条未读</span></a></li>
       <li><a href="{% url 'change_password' %}" data-ajax="false">修改密码</a></li>
       <li><a href="{% url 'change_info' %}" data-ajax="false">修改个人资料</a></li>
       <li><a href="{% url 'auth_teacher' %}" data-ajax="false">教师认证({% if user.profile.auth == 1 %}<label style="color:green">已认证</label>{% elif user.profile.auth == 2 %}<label style="color:red">认证失败</label>{% else %}<label style="color:red">待认证</label>{% endif %})</a></li>

@@ -8,6 +8,8 @@ class Order(models.Model):
     type=models.IntegerField(default=1)
     subject=models.CharField(max_length=200)
     out_trade_no=models.CharField(max_length=200)
+    price=models.FloatField()
+    charge=models.FloatField()
     total_fee=models.FloatField()
     status=models.IntegerField(default=0)
     trade_no=models.CharField(max_length=200)
@@ -101,7 +103,9 @@ class Message(models.Model):
     content=models.TextField()
     time=models.DateTimeField(auto_now=True)
     obj=models.IntegerField()
+    status=models.IntegerField(default=1)
     profile=models.ForeignKey(Profile)
+    work=models.ForeignKey(Work)
 
     
     

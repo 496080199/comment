@@ -8,7 +8,7 @@ $.ajaxSetup({
 </script>
 {% endblock %}
 {% block content %}
-	<div id="total_fee" hidden>{{order.total_fee}}</div>
+	<div id="price" hidden>{{order.price}}</div>
     <h3>评论列表：<h3>
     {% for app in apps %}
     <div data-role="collapsible">
@@ -51,7 +51,7 @@ $.ajaxSetup({
 
 
     评分：<input type="range" id="score{{app.comment.id}}" name="score{{app.comment.id}}"  value="{{app.comment.score}}" min="2" max="10" onchange="changeScore({{app.comment.id}})">
-    <div id="worth{{app.comment.id}}"></div>
+    <div id="worth{{app.comment.id}}" ></div>
 
   </div>
   {% endfor %}

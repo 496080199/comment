@@ -63,5 +63,6 @@ urlpatterns = [
     url(r'^to_pay/([0-9]+)$','index.views.to_pay',name='to_pay'),
     url(r'^pay_notify','index.views.pay_notify',name='pay_notify'),
     url(r'^pay_return','index.views.pay_return',name='pay_return'),
+    url(r'^message_redirect/([0-9]+)/([0-9]+)$','index.views.message_redirect',name='message_redirect'),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT) 

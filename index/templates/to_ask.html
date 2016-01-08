@@ -18,12 +18,6 @@ function getPrice(){
 		$("#price").hide();
 	}
 }
-function comCharge(){
-	var price=$("#range_price").val();
-	var charge=(price*0.05)
-	//alert(charge)
-	document.getElementById("charge").innerHTML="<label>"+charge.toFixed(2)+"</label>"
-}
 </script>
 {% endblock %}
 {% block body %}
@@ -43,8 +37,8 @@ function comCharge(){
 </select>{{form.pay.errors}} 
 	<br>
 	<div id="price" hidden>
-	<label>费用(元）：</label><input type="range" id="range_price" name="price" min="10.0" max="100.0" step="0.1" value="10.0" onchange="comCharge();" />{{form.price.errors}}
-	<label>手续费（元）：</label><div id="charge"></div>
+	<label>费用(元）：</label><input type="range" id="range_price" name="price" min="10.0" max="100.0" step="0.1" value="10.0"  />{{form.price.errors}}
+	<br>
 	</div>
 	<label>详细内容:</label>{{form.content}}{{form.content.errors}}
 	<label>视频（可选）:</label><input type="file" name="video" id="id_video"  onchange="videoSelected();" />{{form.video.errors}}  

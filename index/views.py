@@ -177,8 +177,9 @@ def user_logout(request):
 def teacher_center(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
+    msg_count=request.user.profile.message_set.filter(status=1).count()
     
-    return render(request,'teacher_center.html',{'media_url':MEDIA_URL})
+    return render(request,'teacher_center.html',{'media_url':MEDIA_URL,'msg_count':msg_count})
 def auth_teacher(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -226,7 +227,8 @@ def student_center(request):
     
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    return render(request,'student_center.html',{'media_url':MEDIA_URL})
+    msg_count=request.user.profile.message_set.filter(status=1).count()
+    return render(request,'student_center.html',{'media_url':MEDIA_URL,'msg_count':msg_count})
 
 def change_password(request):
     
@@ -317,7 +319,7 @@ def app_answer(request,id):
     app.save()
     work.app_sum+=1
     work.save()
-    message(request.user.profile,"发起了解答申请,问题是："+work.name.encode('utf8'),work.student.id)
+    message(request.user.profile,"发起了解答申请,问题是：",work.id,work.student.id)
     return redirect(reverse('my_applicate'))
 def del_answer(request,id):
     if not request.user.is_authenticated():
@@ -433,7 +435,7 @@ def submit_com(request,id):
             return redirect(reverse('show_answer',args=(id,))) 
     work.status=3
     work.save()
-    message(request.user.profile,"提交了解答,解答的问题是："+work.name.encode('utf-8'),work.student.id)
+    message(request.user.profile,"提交了解答,解答的问题是：",work.id,work.student.id)
     return redirect(reverse('show_answer',args=(id,))) 
 def view_com(request,id):
     info=''
@@ -458,13 +460,15 @@ def view_com(request,id):
                 if work.order:
                     neworder=Order(user_id=app.teacher.user.id)
                     neworder.type=2
-                    neworder.subject=work.name+'的解答费'
+                    neworder.subject=work.name+u'的解答费'
                     rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
                     neworder.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
-                    neworder.total_fee=round(float(app.comment.score)/10*(order.total_fee),2)
+                    neworder.total_fee=round(float(app.comment.score)/10*(order.price),2)
+                    neworder.price=0
+                    neworder.charge=0
                     neworder.save()
                 
-                message(request.user.profile,"给您评了"+str(app.comment.score)+"分，问题是："+app.work.name.encode('utf-8'),app.teacher.id)
+                message(request.user.profile,"给您评了"+str(app.comment.score)+"分，问题是：",work.id,app.teacher.id)
             work.save()
             return redirect(reverse('show_ask',args=(id,)))
         else:
@@ -489,14 +493,19 @@ def to_ask(request):
             if form['pay'].value()=='1':
                 order=Order()
                 order.user_id=request.user.id
-                order.subject=work.name+'的提问费'
+                order.subject=work.name+u'的提问费'
                 rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
                 order.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
-                price=int(form['price'].value())
+                price=float(form['price'].value())
                 if price:
-                    order.total_fee=price
+                    order.total_fee=round(price,2)
+                    order.charge=round(price*0.02,2)
+                    order.price=round(price*(1-0.02),2)
                 else:
-                    order.total_fee=10
+                    order.total_fee=10.0
+                    order.charge=0.2
+                    order.price=9.8
+                    
                     
                 order.save()
                 work.order=order.out_trade_no
@@ -547,7 +556,7 @@ def manage_app(request,id):
             work.status=2
             work.save()
             for app in work.applicate_set.filter(stat=1):
-                message(request.user.profile,"同意了您的申请，问题是："+work.name.encode('utf-8'),app.teacher.id)
+                message(request.user.profile,"同意了您的申请，问题是：",work.id,app.teacher.id)
             
             return redirect(reverse('show_ask',args=(id,)))
         info='ERR'
@@ -609,7 +618,7 @@ def addit_ask(request,id):
         work.addit=request.POST['addit']
         work.save()
         for app in work.applicate_set.filter(stat=1):
-            message(request.user.profile,"补充了说明，问题是："+work.name.encode('utf-8'),app.teacher.id)
+            message(request.user.profile,"补充了说明，问题是：",work.id,app.teacher.id)
     return redirect(reverse('show_ask',args=(id,)))
         
 def del_ask(request,id):
@@ -653,16 +662,31 @@ def log(profile,action):
     log.content=str(action)
     log.save()
     return 'OK'
-def message(profile,action,id):
+def message(profile,action,work_id,profile_id):
     message=Message()
     message.profile=profile
     message.content=str(action)
-    message.obj=id
+    message.work_id=work_id
+    message.obj=profile_id
     message.save()
     return 'OK'
 def view_message(request):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
     messages=Message.objects.filter(obj=request.user.profile.id).order_by('-time')
     return render(request,'view_message.html',{'messages':messages})
+def message_redirect(request,m_id,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    message=Message.objects.get(id=m_id)
+    if message.status==1:
+        message.status=0
+        message.save()
+    if request.user.profile.type==1:
+        return redirect(reverse('show_answer',args=(id,)))
+    elif request.user.profile.type==2:
+        return redirect(reverse('show_ask',args=(id,)))    
+    
 
 def my_order(request):
     if not request.user.is_authenticated():
