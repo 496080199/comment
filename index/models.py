@@ -1,19 +1,21 @@
 from django.db import models
 from comment.settings import MEDIA_ROOT, MEDIA_URL
 from django.contrib.auth.models import User
-import os
+import os,random
+from datetime import datetime
 # Create your models here.
 class Order(models.Model):
     user_id=models.IntegerField()
     type=models.IntegerField(default=1)
     subject=models.CharField(max_length=200)
-    out_trade_no=models.CharField(max_length=200)
+    out_trade_no=models.CharField(max_length=200,default=datetime.now().strftime("%Y%m%d%H%M%S")+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9)))
     price=models.FloatField()
     charge=models.FloatField()
     total_fee=models.FloatField()
     status=models.IntegerField(default=0)
     trade_no=models.CharField(max_length=200)
     time=models.DateTimeField(auto_now=True)
+    batch_id=models.CharField(max_length=200,default=0)
     def __unicode__(self):              
         return self.subject
     

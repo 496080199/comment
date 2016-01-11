@@ -4,12 +4,23 @@
 	<label>订单号:</label>{{order.out_trade_no}}<br>
 	<label>订单名称：</label>{{order.subject}}<br>
 	<label>订单费用：</label>{{order.total_fee}} 元<br>
-	<label>订单状态:</label>{% if order.status == 1 %} 已支付{% elif order.status == 0 %} 未支付 <a href="{% url 'to_pay' order.id %}" data-ajax="false">去支付</a> {% endif %}<br>
+	<label>订单状态:</label>
+	{% if user.profile.type == 1 %}
+	{% if order.status == 1 %} 已收款{% elif order.status == 0 %} 未收款 
+	<!--  
+	<form method="post" action="{% url 'app_pay' order.id %}" data-ajax="false">{% csrf_token %}
+	<button type="submit" data-ajax="false">去申请</button>
+	</form>
+	-->
+	{% elif order.status == 2 %}申请已提交，处理中 {% endif %}<br>
+	{% elif user.profile.type == 2 %}
+	{% if order.status == 1 %} 已支付{% elif order.status == 0 %} 未支付 <a href="{% url 'to_pay' order.id %}" data-ajax="false">去支付</a> {% endif %}<br>
+	{% endif %}
     <label>订单生成时间:</label>{{order.time|date:"Y-m-d H:i:s"}}<br>
 
     
     
     
     
-    <a href="#" data-role="button" data-rel="back" data-ajax="False">返回</a>
+    <a href="{% url 'my_order' 0 %}" data-role="button" data-ajax="False">返回</a>
 {% endblock %}

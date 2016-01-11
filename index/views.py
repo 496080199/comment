@@ -6,16 +6,16 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.hashers import make_password
-from comment.settings import MEDIA_URL, ALIPAY,RETURN_URL,NOTIFY_URL
+from comment.settings import MEDIA_URL, ALIPAY,RETURN_URL,NOTIFY_URL, FROM_EMAIL
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
-from datetime import datetime
-import random
 from alipay import Alipay
 import httplib2
 from django.views.decorators.csrf import csrf_exempt
 from django.views.csrf import csrf_failure
 from urllib import urlencode
+from django.db.models import Q
+from django.core.mail import send_mail
 
 # Create your views here.
 def index(request):
@@ -146,6 +146,17 @@ def register(request):
         form=UserForm()
         
     return render(request,'register.html',{'form':form,'info':info})
+def forget_password(request):
+    info=''
+    if request.method=='POST':
+        email=request.POST['email']
+        user=User.objects.get(email=email)
+        password=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
+        user.password=make_password(password)
+        user.save()
+        send_mail('重置密码','您的新密码为：'+password+',请登录后及时修改密码,谢谢。',FROM_EMAIL,[email])
+        info='OK'
+    return render(request,'forget_password.html',{'info':info})
 def user_login(request):
     if logined(request):
         return logined(request)
@@ -177,7 +188,7 @@ def user_logout(request):
 def teacher_center(request):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    msg_count=request.user.profile.message_set.filter(status=1).count()
+    msg_count=Message.objects.filter(obj=request.user.profile.id).filter(status=1).count()
     
     return render(request,'teacher_center.html',{'media_url':MEDIA_URL,'msg_count':msg_count})
 def auth_teacher(request):
@@ -227,7 +238,7 @@ def student_center(request):
     
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    msg_count=request.user.profile.message_set.filter(status=1).count()
+    msg_count=Message.objects.filter(obj=request.user.profile.id).filter(status=1).count()
     return render(request,'student_center.html',{'media_url':MEDIA_URL,'msg_count':msg_count})
 
 def change_password(request):
@@ -329,7 +340,7 @@ def del_answer(request,id):
     app.delete()
     work.app_sum-=1
     work.save()
-    log(request.user.profile,"删除了一个答疑")
+    message(request.user.profile,"删除了解答申请,问题是：",work.id,work.student.id)
     return redirect(reverse('my_applicate'))
 def my_applicate(request):
     if not request.user.is_authenticated():
@@ -461,8 +472,6 @@ def view_com(request,id):
                     neworder=Order(user_id=app.teacher.user.id)
                     neworder.type=2
                     neworder.subject=work.name+u'的解答费'
-                    rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
-                    neworder.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
                     neworder.total_fee=round(float(app.comment.score)/10*(order.price),2)
                     neworder.price=0
                     neworder.charge=0
@@ -494,8 +503,6 @@ def to_ask(request):
                 order=Order()
                 order.user_id=request.user.id
                 order.subject=work.name+u'的提问费'
-                rand=str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))+str(random.randint(0,9))
-                order.out_trade_no=datetime.now().strftime("%Y%m%d%H%M%S")+rand
                 price=float(form['price'].value())
                 if price:
                     order.total_fee=round(price,2)
@@ -523,7 +530,7 @@ def my_ask(request):
 def show_ask(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    work=Work.objects.get(id=id)
+    work=request.user.profile.work_set.get(id=id)
     n=0
     m=0
     com_count=0
@@ -630,7 +637,7 @@ def del_ask(request,id):
     apps=work.applicate_set.all()
     for app in apps:
         app.delete()
-    log(request.user.profile,"删了一个问题")
+        message(request.user.profile,"删了一个问题,问题是：",work.id,app.teacher.id)
     return redirect(reverse('my_ask'))
 def change_app_stat(request,id):
     if not request.user.is_authenticated():
@@ -688,11 +695,36 @@ def message_redirect(request,m_id,id):
         return redirect(reverse('show_ask',args=(id,)))    
     
 
-def my_order(request):
+def my_order(request,type):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
-    orders=Order.objects.filter(user_id=request.user.id).order_by('-time')
-    return render(request,'my_order.html',{'orders':orders})
+    info=''
+    orders=Order.objects.filter(user_id=request.user.id).filter(status=type).exclude(batch_id=1).order_by('-time')
+    total=0.0
+    for order in orders:
+        total+=order.total_fee
+    if request.method=='POST': 
+        if int(type)==0 and request.user.profile.type==1 and total > 0:
+            neworder=Order()
+            neworder.user_id=request.user.id
+            neworder.subject=request.user.last_name+request.user.last_name+u'老师解答批量收款'
+            neworder.total_fee=round(float(total),2)
+            neworder.status=2
+            neworder.type=2
+            neworder.batch_id=1
+            neworder.price=0
+            neworder.charge=0
+            neworder.save()
+            for order in orders:
+                order.batch_id=neworder.out_trade_no
+                order.status=2
+                order.save()
+                info='OK'
+        else:
+            info='ERR'
+            
+        
+    return render(request,'my_order.html',{'orders':orders,'type':int(type),'total':total,'info':info})
 def view_order(request,id):
     if not request.user.is_authenticated():
         return redirect(reverse('user_login'))
@@ -737,6 +769,17 @@ def pay_return(request):
     out_trade_no=param['out_trade_no']
     work=Work.objects.get(order=out_trade_no)
     return redirect(reverse('manage_app',args=(work.id,)))
+
+def app_pay(request,id):
+    if not request.user.is_authenticated():
+        return redirect(reverse('user_login'))
+    if request.method=='POST':
+        order=Order.objects.get(id=id)
+        if order.status!=2:
+            order.status=2
+            order.save()
+    return redirect(reverse('view_order',args=(id,)))
+        
     
     
     

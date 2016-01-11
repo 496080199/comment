@@ -1,21 +1,53 @@
 {% extends 'base.html' %}
+{% block head %}
+<style>
+.ui-block-a 
+{
+border: 1px solid lightgrey;
+height: 120px;
+font-weight: bold;
+text-align: center;
+padding: 4px;
+}
+</style>
+{% endblock %}
 {% block content %}
-    <h3>订单列表：<h3>
-    <ol data-role="listview" data-filter="true">
+	<div class="ui-grid-b">
+  <div class="ui-block-b"><a href="{% url 'my_order' 0 %}" type="button" data-ajax="false">{% if request.user.profile.type == 1 %}未收款{% elif request.user.profile.type == 2 %} 未支付 {% endif %}</a></div>
+  {% if request.user.profile.type == 1 %}<div class="ui-block-b"><a href="{% url 'my_order' 2 %}" type="button" data-ajax="false">待处理</a></div>{% endif %}
+  <div class="ui-block-b"><a href="{% url 'my_order' 1 %}" type="button" data-ajax="false">{% if request.user.profile.type == 1 %}已收款{% elif request.user.profile.type == 2 %} 已支付 {% endif %}</a></div>
+  </div>
+    <h3>
+    {% if request.user.profile.type == 1 %}
+    {% if type == 0 %}未收款{% elif type == 1 %}已收款{% elif type == 2 %}待处理{% endif %}
+    {% elif request.user.profile.type == 2 %}
+    {% if type == 0 %}未支付{% elif type == 1 %}已支付{% endif %}
+    {% endif %}
+    
+    订单列表：<h3>
+    <ol data-role="listview">
     {% for order in orders %}
    
     <li>
     <a href="{% url 'view_order' order.id %}" data-ajax="false">{{order.subject}}
-    <span class="ui-li-count">{% if order.status == 1 %} 已支付 {% elif order.status == 0 %} 未支付 {% endif %}
+	<span class="ui-li-count">{{order.total_fee}}元</span>
+   
     </a></li>
     
     
     {% endfor %}
-
-    
-
-    
-    
+	<br>
+    费用总计：{{total}}元
+	{% if request.user.profile.type == 1 and type == 0 %}
+    <form method="POST" action="{% url 'my_order' 0 %}" data-ajax="false">{% csrf_token %}
+    <button type="submit">进行收款</button>
+    {% endif %}
+    </form>
+    {% if info == 'OK' %}
+    收款申请已提交
+    {% elif info == 'ERR' %}
+    收款申请提交错误
+    {% endif %}
     
     
     <a href="{% url 'user_login' %}" data-role="button">返回</a>

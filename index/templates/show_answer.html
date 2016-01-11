@@ -12,7 +12,7 @@
 	<label>费用类型:</label><br>
 	{% if work.order %}
 	有佣金
-	{% else %}
+		{% else %}
 	无佣金
 	{% endif %}
 	<hr>
@@ -21,20 +21,20 @@
     {{work.desc}}
     <hr>
     {% endif %}
-    {% if user.profile.type == 1 %}
-    {% if applicate.stat == 1 %}
-    	{% if applicate.work.status == 2 %}
-    	{% if work.content %}
-    	<label>详细内容:</label>
+    {% if user.profile.type == 1  %}
+    	{% if applicate.stat == 1 and user.profile == applicate.profile %}
+    		{% if applicate.work.status == 2 %}
+    			{% if work.content %}
+    			<label>详细内容:</label>
     	
-    	{{work.content}}
-    	<hr>
-   	 	{% endif %}  
-   	 	{% if work.video %}  	
-   	 	<label>视频:</label><br>
+    			{{work.content}}
+    			<hr>
+   	 			{% endif %}  
+   	 			{% if work.video %}  	
+   	 			<label>视频:</label><br>
    	 	
    	 	
-    		<video id="really-cool-video" class="video-js vjs-default-skin" controls 
+    			<video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
  data-setup='{}'>
   <source src="{{media_url}}{{work.video}}" type='video/mp4'>
@@ -45,61 +45,61 @@
 </video>
 <a href="{{media_url}}{{work.video}}" data-ajax="false">点击下载</a>
 <hr>
-{% endif %}
-{% if work.audio %}
-<label>音频:</label><br>
-   {% if work.getaudiosuffix == '.wav' %}
-   <audio src="{{media_url}}{{work.audio}}" controls>
-	您的浏览器不支持 audio 标签。
-	</audio>
-	{% elif work.getaudiosuffix == '.mp3' %}
-	<audio src="{{media_url}}{{work.audio}}" controls>
-	您的浏览器不支持 audio 标签。
-	</audio>
-	{% endif %}
-	<br>
-	<a href="{{media_url}}{{work.audio}}" data-ajax="false">点击下载</a>
-	<br>
-   <hr>
-	{% endif %}
-	{% if work.image %}
- 	<label>截图:</label><br>
- 	<img src="{{media_url}}{{work.image}}" alt="截图" height="300" width="300" />
- 	<hr>
- 	{% endif %}
- 	{% if work.addit  %}
-     		<label>补充说明:</label><br>
-     		{{work.addit}}
-     		<hr>
-     		{% endif %}
-     		{% if n == 0 %}
-     		<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">填写解答</a>
-     		{% elif n == 1 %}
-     		<a href="{% url 'submit_com' id %}" data-role="button" data-theme="b" data-ajax="false" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">提交解答</a>
-     		<br>
-     		<a href="{% url 'edit_com' id %}" data-role="button" data-theme="b" data-ajax="false">修改解答</a>
-     		<a href="{% url 'del_com' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-theme="a" data-ajax="false">删除解答</a>
-     		{% elif n == 2 %}
-     		<p>您的解答已提交，请等待结果</p>
-     		{% endif %}
-     	 {% elif applicate.work.status == 3 %}
-     	 <p>此问题所有解答已提交，等待学生评分</p>
+				{% endif %}
+				{% if work.audio %}
+				<label>音频:</label><br>
+   					{% if work.getaudiosuffix == '.wav' %}
+   					<audio src="{{media_url}}{{work.audio}}" controls>
+					您的浏览器不支持 audio 标签。
+					</audio>
+					{% elif work.getaudiosuffix == '.mp3' %}
+					<audio src="{{media_url}}{{work.audio}}" controls>
+					您的浏览器不支持 audio 标签。
+					</audio>
+					{% endif %}
+					<br>
+					<a href="{{media_url}}{{work.audio}}" data-ajax="false">点击下载</a>
+					<br>
+   					<hr>
+				{% endif %}
+				{% if work.image %}
+ 				<label>截图:</label><br>
+ 				<img src="{{media_url}}{{work.image}}" alt="截图" height="300" width="300" />
+ 					<hr>
+ 				{% endif %}
+ 				{% if work.addit  %}
+     			<label>补充说明:</label><br>
+     			{{work.addit}}
+     			<hr>
+     			{% endif %}
+     			{% if n == 0 %}
+     			<a href="{% url 'to_com' id %}" data-role="button" data-theme="b" data-ajax="false">填写解答</a>
+     			{% elif n == 1 %}
+     			<a href="{% url 'submit_com' id %}" data-role="button" data-theme="b" data-ajax="false" onclick="if(confirm('提交后无法修改，请确认?')==false) return false;">提交解答</a>
+     			<br>
+     			<a href="{% url 'edit_com' id %}" data-role="button" data-theme="b" data-ajax="false">修改解答</a>
+     			<a href="{% url 'del_com' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-theme="a" data-ajax="false">删除解答</a>
+     			{% elif n == 2 %}
+     			<p>您的解答已提交，请等待结果</p>
+     			{% endif %}
+     	 	{% elif applicate.work.status == 3 %}
+     		 <p>此问题所有解答已提交，等待学生评分</p>
      	 
-     	 {% elif applicate.work.status == 4 %}
-     	 <p>解答已结束，您的评分为{{applicate.comment.score}}分</p>
-    	 {% else %}
-     	<p>正在申请答疑中</p>
-     	{% endif %}
-     	{% if request.user.profile == applicate.profile %}
-     	<div>
-    <h4>我的解答</h4>
-    <label>内容：</label><br>
-    <div>{{applicate.comment.content}}</div>
-    <hr>
-    {% if applicate.comment.video %}
-    <label>视频：</label><br>
+     	 	{% elif applicate.work.status == 4 %}
+     	 	<p>解答已结束，您的评分为{{applicate.comment.score}}分</p>
+    	 	{% else %}
+     		<p>正在申请答疑中</p>
+     		{% endif %}
+     		{% if request.user.profile == applicate.profile %}
+     		<div>
+    		<h4>我的解答</h4>
+    		<label>内容：</label><br>
+    		<div>{{applicate.comment.content}}</div>
+   			<hr>
+    			{% if applicate.comment.video %}
+   				 <label>视频：</label><br>
     
-<video id="really-cool-video" class="video-js vjs-default-skin" controls 
+				<video id="really-cool-video" class="video-js vjs-default-skin" controls 
  preload="auto" width="320" height="240" poster="really-cool-video-poster.jpg"
  data-setup='{}'>
   <source src="{{media_url}}{{applicate.comment.video}}" type='video/mp4'>
@@ -107,54 +107,60 @@
     To view this video please enable JavaScript, and consider upgrading to a web browser
     that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
   </p>
-</video>
-<a href="{{media_url}}{{applicate.comment.video}}" >点击下载</a>
-<br>
-   <hr>
-{% endif %}
-{% if applicate.comment.audio %}
-   <label>音频：</label><br>
-   <audio src="{{media_url}}{{applicate.comment.audio}}" controls>
-	您的浏览器不支持 audio 标签。
-	</audio>
+				</video>
+				<a href="{{media_url}}{{applicate.comment.video}}" >点击下载</a>
+				<br>
+  			 	<hr>
+				{% endif %}
+				{% if applicate.comment.audio %}
+   				<label>音频：</label><br>
+   				<audio src="{{media_url}}{{applicate.comment.audio}}" controls>
+				您的浏览器不支持 audio 标签。
+				</audio>
 
-	<br>
-	<a href="{{media_url}}{{applicate.comment.audio}}" >点击下载</a>
-<br>
-   <hr>
-	{% endif %}
-	{% if applicate.comment.image %}
- 	<label>图片:</label><br>
- 			<img src="{{media_url}}{{applicate.comment.image}}" alt="截图" height="300" width="300" />
-<hr>
- 	{% endif %}
+				<br>
+				<a href="{{media_url}}{{applicate.comment.audio}}" >点击下载</a>
+				<br>
+   				<hr>
+				{% endif %}
+				{% if applicate.comment.image %}
+ 				<label>图片:</label><br>
+ 				<img src="{{media_url}}{{applicate.comment.image}}" alt="截图" height="300" width="300" />
+				<hr>
+ 				{% endif %}
 
 
   
 
-  </div>
-    {% endif %}
-    {% elif applicate.stat == 0 %}
-    {% if applicate.work.status == 2 or applicate.work.status == 1%}
-        <br>
-    <br>
+  				</div>
+   	 		{% endif %}
+    	{% elif applicate.stat == 0 and user.profile == applicate.profile %}
+    		{% if applicate.work.status == 2 or applicate.work.status == 1%}
+        	<br>
+    		<br>
      
-    <p>正在申请答疑中</p>
-    <a href="{% url 'del_answer' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">取消申请</a>
-    {% else %}
+    		<p>正在申请答疑中</p>
+    		<a href="{% url 'del_answer' id %}" onclick="if(confirm('确定删除?')==false) return false;" data-role="button" data-ajax="false" data-theme="a">取消申请</a>
+    		{% else %}
+        	<br>
+    		<br>
+    		您未被同意回答此问题，请去回答其他问题吧
+    		{% endif %}
+    	{% else %}
         <br>
-    <br>
-    您未被同意回答此问题，请去回答其他问题吧
-    {% endif %}
-    {% else %}
-        <br>
-    <br>
-    <a href="{% url 'app_answer' id %}" data-role="button" data-theme="b" data-ajax="false">申请答疑</a>
-    {% endif %}
+    	<br>
+    	<a href="{% url 'app_answer' id %}" data-role="button" data-theme="b" data-ajax="false">申请答疑</a>
+    	{% endif %}
     {% endif %}
     <br>
     <br>
-    
-    <a href="#" data-role="button" data-rel="back">返回</a>
-    
+    {% if user.profile == applicate.profile%}
+    	{% if work.status < 2 %}
+    	<a href="{% url 'my_applicate' %}" data-role="button" data-ajax="false">返回</a>
+    	{% else %}
+    	<a href="{% url 'my_comment' %}" data-role="button" data-ajax="false">返回</a>
+    	{% endif %}
+    {% else %}	
+    <a href="#" data-role="button" data-ajax="false" data-rel="back">返回</a>
+    {% endif %}
 {% endblock %}

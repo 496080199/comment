@@ -128,3 +128,13 @@ SELLER_EMAIL=''
 RETURN_URL='http://comment.xiuche580.com/pay_return'
 NOTIFY_URL='http://comment.xiuche580.com/pay_notify'
 ALIPAY=Alipay(pid=PID, key=KEY, seller_email=SELLER_EMAIL)
+
+
+EMAIL_HOST='smtp.139.com'
+EMAIL_PORT=25
+EMAIL_HOST_USER=15002080574
+EMAIL_HOST_PASSWORD=1988729
+FROM_EMAIL='15002080574@139.com'
+
+
+
